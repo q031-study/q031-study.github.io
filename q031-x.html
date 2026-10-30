@@ -1,0 +1,1661 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Puzzle study</title>
+<script>
+(function () { var h = location.hash; if (h) { window.__q031h = h; try { history.replaceState(history.state, '', location.pathname + location.search); } catch (e) {} } })();
+</script>
+<style>
+
+:root {
+  --night-0: #13203a; --night-1: #1c2d4d; --night-2: #26395c;
+  --warm-0: #3a2a2a; --warm-1: #6b4330; --warm-2: #a8683c;
+  --snow: #eef3f8; --snow-dim: #b9c6d6; --frost: #cfe3f5; --ice: #8fc3ea;
+  --flame: #ff9a3c; --flame-hot: #ffcf6b; --window-warm: #ffd36b; --window-cold: #2b3e5e;
+  --wood: #8a5a3b; --wood-dark: #5e3b26; --stone: #6f7a8a; --stone-dark: #4f5866;
+  --ink: #f2f5f9; --ink-dim: #a9b6c8; --accent: #ffb25e;
+  --bar-h: 104px; --head-h: 58px;
+  --anim-move: 420ms; --anim-effect: 280ms;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; background: var(--night-0); color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; overscroll-behavior: none; }
+body { display: flex; justify-content: center; }
+#app { width: 100%; max-width: 480px; height: 100%; display: flex; flex-direction: column; position: relative;
+  overflow: hidden; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+.screen { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 0 16px; overflow-y: auto; }
+.screen[hidden] { display: none !important; }
+.sheet { justify-content: center; gap: 14px; padding: 24px 20px; }
+.sheet h1 { font-size: 26px; margin: 0; font-weight: 650; }
+.sheet p { font-size: 17px; line-height: 1.45; margin: 0; color: var(--ink); }
+.sheet .fine { font-size: 14px; color: var(--ink-dim); }
+.btn { min-height: 52px; min-width: 52px; border-radius: 14px; border: 0; font-size: 17px; font-weight: 600;
+  padding: 0 20px; background: var(--accent); color: #1d1408; cursor: pointer; }
+.btn.quiet { background: var(--night-2); color: var(--ink); }
+.btn:disabled { opacity: 0.45; }
+.choices { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+#play { padding: 0; }
+.head { height: var(--head-h); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; flex: 0 0 auto; }
+.head .label { font-size: 16px; font-weight: 650; letter-spacing: 0.02em; color: var(--ink); }
+.head .dots { display: flex; gap: 6px; }
+.head .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--night-2); }
+.head .dot.done { background: var(--ink-dim); }
+.head .dot.now { background: var(--accent); }
+.goals { display: flex; gap: 6px; align-items: center; height: 26px; }
+.scene-wrap { flex: 1 1 auto; position: relative; display: flex; align-items: center; justify-content: center; min-height: 0; }
+svg.scene { width: 100%; height: 100%; display: block; touch-action: none; }
+.bar { height: var(--bar-h); flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 0 16px 12px; }
+.bar .ctl { width: 56px; height: 56px; border-radius: 16px; border: 0; background: var(--night-2); display: flex;
+  align-items: center; justify-content: center; padding: 0; cursor: pointer; touch-action: none; }
+.bar .ctl svg { width: 30px; height: 30px; pointer-events: none; }
+.bar .spacer { flex: 1; }
+.bar .skip { height: 52px; border-radius: 14px; border: 0; background: var(--night-2); color: var(--ink); font-size: 15px;
+  font-weight: 600; padding: 0 14px; }
+.pulse { animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,178,94,0.0); } 50% { box-shadow: 0 0 0 6px rgba(255,178,94,0.45); } }
+.qwrap { padding: 20px 4px 28px; gap: 14px; display: flex; flex-direction: column; }
+.qwrap .qn { font-size: 13px; color: var(--ink-dim); }
+.qwrap .qtext { font-size: 19px; line-height: 1.4; font-weight: 600; }
+.qwrap textarea { width: 100%; min-height: 132px; border-radius: 12px; border: 1px solid var(--night-2); background: #0e1830;
+  color: var(--ink); font-size: 17px; padding: 12px; font-family: inherit; resize: vertical; }
+.qwrap .pic { width: 100%; border-radius: 12px; background: var(--night-1); }
+.qwrap .opts { display: flex; gap: 10px; }
+.qwrap .opts .btn { flex: 1; }
+.qwrap .opts .btn.sel { outline: 3px solid var(--ink); }
+.consent-check { display: flex; gap: 12px; align-items: flex-start; font-size: 16px; line-height: 1.4; }
+.consent-check input { width: 26px; height: 26px; flex: 0 0 auto; margin-top: 2px; }
+@media (prefers-reduced-motion: reduce) { :root { --anim-move: 1ms; --anim-effect: 1ms; } }
+
+</style>
+</head>
+<body>
+<div id="app">
+<section id="consent" class="screen" hidden></section>
+<section id="resume" class="screen" hidden></section>
+<section id="intro" class="screen" hidden></section>
+<section id="play" class="screen" hidden></section>
+<section id="question" class="screen" hidden></section>
+<section id="between" class="screen" hidden></section>
+<section id="choice" class="screen" hidden></section>
+<section id="saving" class="screen" hidden></section>
+<section id="finish" class="screen" hidden></section>
+</div>
+<script>
+window.Q031_CONFIG = {"build": "q031C2-55c747a21f9d", "completion": "https://app.prolific.com/submissions/complete", "consentHtml": "<h1>Try two early puzzle prototypes</h1><p>You are invited to try two early browser puzzle prototypes, called Candidate A and Candidate B, and to answer a few short questions about each. The study takes about 40 minutes on an Android phone in Google Chrome. We are testing the prototypes, not you: you do not need to win or give positive feedback, and your payment does not depend on winning, on your answers, or on any choice you make. All answers are optional. You may stop at any time; contact us through Prolific about compensation or a technical problem.</p><p>With your agreement, the study records, under a random study code: which candidate you saw first; your taps and holds on the game screen (including holds you cancel by sliding away), their timing and what each did in the game; undos, restarts, skips and whether each challenge was finished; when the page was hidden or closed, and the type of any technical error on the page (not its details); your written answers; and your choice at the end. Nothing is recorded or sent before you agree. It does not record your screen, microphone, camera, location, device identifiers or anything else from your browser, and it does not ask for your name. Please do not include names or contact details in your answers. While you take part, this page keeps a working copy of your answers in this browser so that it can continue after a reload; it deletes that copy once your final answers are confirmed as saved (if you stop before the end, the copy stays in this browser until you clear its site data). The pages are hosted on GitHub Pages, which may receive normal connection information. Study data goes to the developer's private research storage.</p><p>Research copies and the private link between your study code and your Prolific account will be deleted no later than 90 days after the study's first participant session, including exports, backups and working copies under our control. Prolific and the hosting provider keep their own records under their policies. To ask for earlier deletion, message the researcher through Prolific or write to study-contact@example.org with your study code (shown at the end). If you do not agree, no study data is collected.</p><label class=\"consent-check\"><input type=\"checkbox\" id=\"agree\"> <span>I am 18 or older, have read the information above, and agree to this study.</span></label>", "consentVersion": "Q031-CONSENT-5", "decisionIds": ["R3", "R4", "R5", "RX"], "extra": {"hosts": [{"id": "O", "kind": "oven", "x": 50, "y": 118}, {"id": "A", "kind": "home", "x": 12, "y": 94}, {"id": "B", "kind": "home", "x": 84, "y": 54}, {"id": "C", "kind": "home", "x": 52, "y": 22}, {"id": "K", "kind": "rack", "x": 76, "y": 94}, {"id": "J", "kind": "rack", "x": 12, "y": 38}, {"id": "P", "kind": "carrier", "x": 48, "y": 70}], "id": "RX", "lanes": [{"a": "O", "b": "A", "frost": false}, {"a": "O", "b": "K", "frost": false}, {"a": "O", "b": "P", "frost": false}, {"a": "B", "b": "K", "frost": false}, {"a": "C", "b": "J", "frost": false}, {"a": "C", "b": "P", "frost": false}, {"a": "K", "b": "P", "frost": false}, {"a": "P", "b": "B", "carrier": "P", "frost": false}], "oven_heat": 3, "start": "O"}, "page": "x", "platform": "Prolific", "receiver": {"readback": "jsonp", "url": "https://script.google.com/macros/s/AKfycbz47k90DNdS4tA3YP8h5OyMj8jGKABm3S9cYcp8Q2ajVk24JUcb_uyFsIvKI22xTCD9/exec"}, "situations": [{"hosts": [{"id": "O", "kind": "oven", "x": 20, "y": 104}, {"id": "K", "kind": "rack", "x": 50, "y": 72}, {"id": "A", "kind": "home", "x": 80, "y": 40}], "id": "R1", "lanes": [{"a": "O", "b": "K", "frost": false}, {"a": "K", "b": "A", "frost": false}], "oven_heat": 2, "start": "O"}, {"hosts": [{"id": "O", "kind": "oven", "x": 16, "y": 110}, {"id": "A", "kind": "home", "x": 38, "y": 82}, {"id": "B", "kind": "home", "x": 62, "y": 54}, {"id": "C", "kind": "home", "x": 84, "y": 24}], "id": "R2", "lanes": [{"a": "O", "b": "A", "frost": false}, {"a": "A", "b": "B", "frost": false}, {"a": "B", "b": "C", "frost": false}], "oven_heat": 2, "start": "O"}, {"hosts": [{"id": "O", "kind": "oven", "x": 50, "y": 118}, {"id": "A", "kind": "home", "x": 12, "y": 30}, {"id": "B", "kind": "home", "x": 68, "y": 34}, {"id": "C", "kind": "home", "x": 64, "y": 70}, {"id": "D", "kind": "home", "x": 36, "y": 46}, {"id": "K", "kind": "rack", "x": 24, "y": 74}, {"id": "J", "kind": "rack", "x": 84, "y": 106}], "id": "R3", "lanes": [{"a": "O", "b": "C", "frost": false}, {"a": "O", "b": "K", "frost": false}, {"a": "O", "b": "J", "frost": false}, {"a": "A", "b": "K", "frost": false}, {"a": "B", "b": "C", "frost": false}, {"a": "C", "b": "D", "frost": false}, {"a": "C", "b": "K", "frost": false}, {"a": "C", "b": "J", "frost": false}, {"a": "D", "b": "K", "frost": false}], "oven_heat": 2, "start": "O"}, {"hosts": [{"id": "O", "kind": "oven", "x": 50, "y": 118}, {"id": "A", "kind": "home", "x": 16, "y": 50}, {"id": "B", "kind": "home", "x": 64, "y": 58}, {"id": "C", "kind": "home", "x": 84, "y": 98}, {"id": "D", "kind": "home", "x": 12, "y": 98}, {"id": "E", "kind": "home", "x": 60, "y": 22}, {"id": "K", "kind": "rack", "x": 48, "y": 86}], "id": "R4", "lanes": [{"a": "O", "b": "C", "frost": false}, {"a": "O", "b": "D", "frost": false}, {"a": "A", "b": "B", "frost": false}, {"a": "A", "b": "D", "frost": true}, {"a": "A", "b": "K", "frost": false}, {"a": "B", "b": "C", "frost": false}, {"a": "B", "b": "E", "frost": true}, {"a": "C", "b": "K", "frost": false}, {"a": "D", "b": "K", "frost": false}], "oven_heat": 3, "start": "O"}, {"hosts": [{"id": "O", "kind": "oven", "x": 50, "y": 118}, {"id": "A", "kind": "home", "x": 48, "y": 82}, {"id": "B", "kind": "home", "x": 12, "y": 74}, {"id": "C", "kind": "home", "x": 48, "y": 54}, {"id": "D", "kind": "home", "x": 76, "y": 34}, {"id": "K", "kind": "rack", "x": 36, "y": 26}, {"id": "P", "kind": "carrier", "x": 80, "y": 62}], "id": "R5", "lanes": [{"a": "O", "b": "A", "frost": true}, {"a": "O", "b": "B", "frost": false}, {"a": "O", "b": "P", "frost": false}, {"a": "A", "b": "B", "frost": false}, {"a": "A", "b": "C", "frost": false}, {"a": "B", "b": "C", "frost": false}, {"a": "B", "b": "K", "frost": false}, {"a": "D", "b": "K", "frost": false}, {"a": "K", "b": "P", "frost": false}, {"a": "P", "b": "C", "carrier": "P", "frost": false}], "oven_heat": 2, "start": "O"}], "testRows": false};
+</script>
+<script>
+
+(function (root) {
+  'use strict';
+  const K = [
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2];
+  function utf8(str) {
+    const out = [];
+    for (let i = 0; i < str.length; i++) {
+      let c = str.charCodeAt(i);
+      if (c >= 0xd800 && c <= 0xdbff && i + 1 < str.length) {
+        const d = str.charCodeAt(i + 1);
+        if (d >= 0xdc00 && d <= 0xdfff) { c = 0x10000 + ((c - 0xd800) << 10) + (d - 0xdc00); i++; }
+        else c = 0xfffd;
+      } else if (c >= 0xd800 && c <= 0xdfff) c = 0xfffd;
+      if (c < 0x80) out.push(c);
+      else if (c < 0x800) out.push(0xc0 | (c >> 6), 0x80 | (c & 63));
+      else if (c < 0x10000) out.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+      else out.push(0xf0 | (c >> 18), 0x80 | ((c >> 12) & 63), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+    }
+    return out;
+  }
+  function sha256hex(str) {
+    const bytes = utf8(String(str));
+    const l = bytes.length, nb = Math.ceil((l + 9) / 64), buf = new Array(nb * 64).fill(0);
+    for (let i = 0; i < l; i++) buf[i] = bytes[i];
+    buf[l] = 0x80;
+    const hi = Math.floor(l / 0x20000000), lo = (l * 8) >>> 0;
+    for (let i = 0; i < 4; i++) { buf[buf.length - 8 + i] = (hi >>> (24 - 8 * i)) & 255; buf[buf.length - 4 + i] = (lo >>> (24 - 8 * i)) & 255; }
+    const H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+    const W = new Array(64);
+    const rotr = (x, n) => (x >>> n) | (x << (32 - n));
+    for (let b = 0; b < nb; b++) {
+      const o = b * 64;
+      for (let i = 0; i < 16; i++) W[i] = (buf[o + 4 * i] << 24) | (buf[o + 4 * i + 1] << 16) | (buf[o + 4 * i + 2] << 8) | buf[o + 4 * i + 3];
+      for (let i = 16; i < 64; i++) {
+        const s0 = rotr(W[i - 15], 7) ^ rotr(W[i - 15], 18) ^ (W[i - 15] >>> 3);
+        const s1 = rotr(W[i - 2], 17) ^ rotr(W[i - 2], 19) ^ (W[i - 2] >>> 10);
+        W[i] = (W[i - 16] + s0 + W[i - 7] + s1) | 0;
+      }
+      let a = H[0], b2 = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+      for (let i = 0; i < 64; i++) {
+        const S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25), ch = (e & f) ^ (~e & g);
+        const t1 = (h + S1 + ch + K[i] + W[i]) | 0;
+        const S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22), maj = (a & b2) ^ (a & c) ^ (b2 & c);
+        const t2 = (S0 + maj) | 0;
+        h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b2; b2 = a; a = (t1 + t2) | 0;
+      }
+      H[0] = (H[0] + a) | 0; H[1] = (H[1] + b2) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
+      H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+    }
+    return H.map(x => (x >>> 0).toString(16).padStart(8, '0')).join('');
+  }
+  root.Q031_SHA256 = sha256hex;
+  if (typeof module !== 'undefined' && module.exports) module.exports = sha256hex;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+</script>
+<script>
+
+const EngineX = (function () {
+  'use strict';
+  const CAP = 3;
+  function Level(data) {
+    const L = { data: data, id: data.id };
+    L.hosts = data.hosts.map(h => h.id);
+    L.kind = data.hosts.map(h => h.kind);
+    L.n = L.hosts.length;
+    L.ix = {};
+    L.hosts.forEach((h, i) => { L.ix[h] = i; });
+    L.start = L.ix[data.start];
+    if (L.kind[L.start] !== 'oven') throw new Error('start must be the oven');
+    L.heat0 = data.oven_heat | 0;
+    L.lanes = [];
+    const pairs = new Set();
+    data.lanes.forEach(ln => {
+      const a = L.ix[ln.a], b = L.ix[ln.b];
+      if (a === undefined || b === undefined || a === b) throw new Error('bad lane');
+      const key = Math.min(a, b) + ':' + Math.max(a, b);
+      if (pairs.has(key)) throw new Error('two lanes between the same hosts');
+      pairs.add(key);
+      const ci = ln.carrier ? L.ix[ln.carrier] : -1;
+      if (ci >= 0 && (L.kind[ci] !== 'carrier' || (ci !== a && ci !== b) || ln.frost)) throw new Error('bad carrier lane');
+      L.lanes.push({ a: a, b: b, frost: !!ln.frost, carrier: ci });
+    });
+    L.homes = [];
+    L.allhomes = 0;
+    for (let i = 0; i < L.n; i++) if (L.kind[i] === 'home') { L.homes.push(i); L.allhomes |= (1 << i); }
+    L.adj = [];
+    for (let i = 0; i < L.n; i++) L.adj.push([]);
+    L.lanes.forEach((ln, li) => { L.adj[ln.a].push([li, ln.b]); L.adj[ln.b].push([li, ln.a]); });
+    return L;
+  }
+  function initial(L) { return { pos: L.start, heat: L.heat0, W: 0, U: 0, M: 0, fd: false, CW: 0, CF: 0 }; }
+  function isWin(L, s) { return (s.W & L.allhomes) === L.allhomes; }
+  function laneOpen(L, s, li) { const c = L.lanes[li].carrier; return c < 0 || ((s.CW >> c) & 1) === 1; }
+  function assess(L, s, li) {
+    const ln = L.lanes[li];
+    let base, via;
+    if (s.fd) { base = 0; via = 'free'; }
+    else if (ln.carrier >= 0 && s.pos === ln.carrier && ((s.CF >> ln.carrier) & 1)) { base = 0; via = 'carry'; }
+    else { base = 1; via = 'paid'; }
+    const sur = (ln.frost && !((s.M >> li) & 1)) ? 1 : 0;
+    return { cost: base + sur, via: via, frost: sur };
+  }
+  function apply(L, s, li, v) {
+    const a = assess(L, s, li);
+    let h2 = s.heat - a.cost;
+    const M2 = a.frost ? (s.M | (1 << li)) : s.M;
+    let CF2 = a.via === 'carry' ? (s.CF & ~(1 << s.pos)) : s.CF;
+    let W2 = s.W, U2 = s.U, CW2 = s.CW, fd2 = false;
+    const k = L.kind[v];
+    let effect = 'none';
+    if (k === 'rack' && !((s.U >> v) & 1)) { h2 = Math.min(CAP, h2 + 2); U2 = s.U | (1 << v); effect = 'rack'; }
+    else if (k === 'home' && !((s.W >> v) & 1)) { W2 = s.W | (1 << v); fd2 = true; effect = 'home'; }
+    else if (k === 'carrier' && !((s.CW >> v) & 1)) { CW2 = s.CW | (1 << v); CF2 = CF2 | (1 << v); effect = 'carrier'; }
+    return { state: { pos: v, heat: h2, W: W2, U: U2, M: M2, fd: fd2, CW: CW2, CF: CF2 },
+             info: { lane: li, cost: a.cost, via: a.via, frost: a.frost, effect: effect, arriveHeat: s.heat - a.cost } };
+  }
+  function tryTap(L, s, v) {
+    if (isWin(L, s)) return { kind: 'won' };
+    if (v === s.pos) return { kind: 'self' };
+    for (const [li, w] of L.adj[s.pos]) {
+      if (w !== v || !laneOpen(L, s, li)) continue;
+      const a = assess(L, s, li);
+      if (s.heat - a.cost < 1) return { kind: 'refused', cost: a.cost, lane: li, via: a.via, frost: a.frost };
+      const r = apply(L, s, li, v);
+      return { kind: 'move', state: r.state, info: r.info };
+    }
+    return { kind: 'nolane' };
+  }
+  function moves(L, s) {
+    if (isWin(L, s)) return [];
+    const out = [];
+    for (const [li, v] of L.adj[s.pos]) {
+      if (!laneOpen(L, s, li)) continue;
+      const r = tryTap(L, s, v);
+      if (r.kind === 'move') out.push([v, r.state]);
+    }
+    return out;
+  }
+  function key(s) { return [s.pos, s.heat, s.W, s.U, s.M, s.fd ? 1 : 0, s.CW, s.CF].join(','); }
+  return { CAP, Level, initial, isWin, laneOpen, assess, tryTap, moves, key };
+})();
+if (typeof module !== 'undefined') module.exports = EngineX;
+
+</script>
+<script>
+
+window.CandidateView = (function () {
+  'use strict';
+  const E = EngineX;
+  const NS = 'http://www.w3.org/2000/svg';
+  let api = null, L = null, st = null, hist = [], svg = null, layer = {}, hostEls = [], laneEls = [], spark = null;
+  let ghost = null, sitData = null;
+  function el(tag, attrs, parent) {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function P(i) { const h = sitData.hosts[i]; return [h.x, h.y]; }
+  function laneD(li) {
+    const ln = sitData.lanes[li], a = P(L.ix[ln.a]), b = P(L.ix[ln.b]);
+    if (ln.via) return 'M' + a[0] + ' ' + a[1] + ' Q' + ln.via[0] + ' ' + ln.via[1] + ' ' + b[0] + ' ' + b[1];
+    return 'M' + a[0] + ' ' + a[1] + ' L' + b[0] + ' ' + b[1];
+  }
+  function pointOnLane(li, from, p) {
+    const path = laneEls[li].base;
+    const len = path.getTotalLength();
+    const ln = L.lanes[li];
+    const forward = from === ln.a;
+    const q = path.getPointAtLength(len * (forward ? p : 1 - p));
+    return [q.x, q.y];
+  }
+  function defs(root) {
+    const d = el('defs', {}, root);
+    const g = el('linearGradient', { id: 'skyx', x1: 0, y1: 0, x2: 0, y2: 1 }, d);
+    el('stop', { offset: '0', 'stop-color': '#13203a' }, g); el('stop', { offset: '1', 'stop-color': '#2a3f63' }, g);
+    const w = el('linearGradient', { id: 'warmx', x1: 0, y1: 0, x2: 0, y2: 1 }, d);
+    el('stop', { offset: '0', 'stop-color': '#3a2a3a' }, w); el('stop', { offset: '1', 'stop-color': '#a8683c' }, w);
+    const f = el('radialGradient', { id: 'flamex', cx: '50%', cy: '70%', r: '60%' }, d);
+    el('stop', { offset: '0', 'stop-color': '#ffe08a' }, f); el('stop', { offset: '1', 'stop-color': '#ff7a1c' }, f);
+    const gl = el('radialGradient', { id: 'glowx' }, d);
+    el('stop', { offset: '0', 'stop-color': '#ffd36b', 'stop-opacity': '0.85' }, gl); el('stop', { offset: '1', 'stop-color': '#ffd36b', 'stop-opacity': '0' }, gl);
+  }
+  function backdrop(root) {
+    el('rect', { x: -10, y: -10, width: 120, height: 150, fill: 'url(#skyx)' }, root);
+    layer.stuck = el('rect', { x: -10, y: -10, width: 120, height: 150, fill: '#8fa6c4', opacity: 0 }, root);
+    layer.warm = el('rect', { x: -10, y: -10, width: 120, height: 150, fill: 'url(#warmx)', opacity: 0 }, root);
+    const snow = el('g', { fill: '#eef3f8', opacity: 0.55 }, root);
+    for (let i = 0; i < 22; i++) {
+      const x = (i * 37.3) % 100, y = (i * 23.9) % 128;
+      el('circle', { cx: x.toFixed(1), cy: y.toFixed(1), r: (0.35 + (i % 3) * 0.2).toFixed(2) }, snow);
+    }
+    el('path', { d: 'M-10 126 Q 25 120 50 125 T 110 124 V 140 H -10 Z', fill: '#dfe8f2', opacity: 0.9 }, root);
+  }
+  function drawOven(g) {
+    el('rect', { x: -6.5, y: -1, width: 13, height: 5, rx: 1, fill: '#4f5866' }, g);
+    el('path', { d: 'M-6 -1 Q -6 -9.5 0 -9.5 Q 6 -9.5 6 -1 Z', fill: '#6f7a8a' }, g);
+    el('path', { d: 'M-2.6 -1 Q -2.6 -5 0 -5 Q 2.6 -5 2.6 -1 Z', fill: '#231a14' }, g);
+    el('ellipse', { cx: 0, cy: -1.6, rx: 1.9, ry: 0.7, fill: '#4a2a20' }, g);
+    el('rect', { x: 2.6, y: -12, width: 2.2, height: 4, fill: '#4f5866' }, g);
+  }
+  function drawRack(g) {
+    el('path', { d: 'M-5 4 L-1.5 -6 M5 4 L1.5 -6', stroke: '#5e3b26', 'stroke-width': 1.3, 'stroke-linecap': 'round' }, g);
+    el('path', { d: 'M-4.2 0.5 H4.2', stroke: '#5e3b26', 'stroke-width': 1.1 }, g);
+    const b = el('g', { class: 'bundle' }, g);
+    el('ellipse', { cx: 0, cy: -2.5, rx: 5.2, ry: 2.6, fill: '#c9a46a' }, b);
+    el('path', { d: 'M-4 -3.2 H4 M-4.4 -2 H4.4 M-3.6 -0.9 H3.6', stroke: '#8a6a3b', 'stroke-width': 0.45 }, b);
+    el('path', { d: 'M-0.8 -5 V0 M0.8 -5 V0', stroke: '#6b4a2a', 'stroke-width': 0.7 }, b);
+    return b;
+  }
+  function drawHome(g) {
+    const glow = el('circle', { cx: 0, cy: -1, r: 9, fill: 'url(#glowx)', opacity: 0 }, g);
+    el('rect', { x: -5.5, y: -3.5, width: 11, height: 8, fill: '#55647d' }, g);
+    el('path', { d: 'M-7 -3.2 L0 -9.5 L7 -3.2 Z', fill: '#3a4660' }, g);
+    const snowcap = el('path', { d: 'M-6.2 -3.9 L0 -9.5 L6.2 -3.9 L4.6 -3.9 L0 -8 L-4.6 -3.9 Z', fill: '#eef3f8' }, g);
+    el('rect', { x: 3, y: -9.5, width: 1.8, height: 3.5, fill: '#3a4660' }, g);
+    const win = el('rect', { x: -2.6, y: -1.8, width: 5.2, height: 4, fill: '#2b3e5e', stroke: '#1a2438', 'stroke-width': 0.4 }, g);
+    const fam = el('g', { fill: '#16203a' }, g);
+    el('circle', { cx: -1, cy: 0.1, r: 0.75 }, fam); el('circle', { cx: 1.1, cy: 0.4, r: 0.65 }, fam);
+    el('path', { d: 'M-2.1 2.2 Q-1 0.9 0 2.2 Q1.1 1.2 2.1 2.2 Z' }, fam);
+    const smoke = el('path', { d: 'M3.9 -10 q-1 -1.6 0.3 -2.8 q1.2 -1.2 0 -2.6', stroke: '#c8cfd8', 'stroke-width': 0.6, fill: 'none', opacity: 0 }, g);
+    return { glow: glow, win: win, fam: fam, smoke: smoke, snowcap: snowcap };
+  }
+  function drawCarrier(g) {
+    const hud = el('g', {}, g);
+    el('ellipse', { cx: 0, cy: 4.4, rx: 3.8, ry: 0.9, fill: '#13203a', opacity: 0.45 }, hud);
+    el('path', { d: 'M-3.2 4.2 Q-3.6 -0.6 -1.4 -2.2 Q0 -3 1.4 -2.2 Q3.6 -0.6 3.2 4.2 Z', fill: '#9a6c48', stroke: '#13203a', 'stroke-width': 0.55 }, hud);
+    el('path', { d: 'M-2.2 -1.6 Q0 -6 2.2 -1.6 Q0 -2.6 -2.2 -1.6 Z', fill: '#7a5238', stroke: '#13203a', 'stroke-width': 0.5 }, hud);
+    el('circle', { cx: 0, cy: -2.6, r: 1.15, fill: '#d9b48f' }, hud);
+    el('path', { d: 'M-2.6 1.4 Q0 2.8 2.6 1.4', stroke: '#6b4630', 'stroke-width': 0.9, fill: 'none', 'stroke-linecap': 'round' }, hud);
+    el('path', { d: 'M-1.2 4.2 V2.8 M1.2 4.2 V2.8', stroke: '#6b4630', 'stroke-width': 0.5 }, hud);
+    const up = el('g', { opacity: 0 }, g);
+    el('path', { d: 'M-2.4 4.2 L-1.6 -2.2 Q0 -3.4 1.6 -2.2 L2.4 4.2 Z', fill: '#c98d5a' }, up);
+    el('circle', { cx: 0, cy: -4.6, r: 1.8, fill: '#e8c39b' }, up);
+    el('path', { d: 'M-1.8 -2.4 Q0 -1.2 1.8 -2.4', stroke: '#b84a3a', 'stroke-width': 0.9, fill: 'none' }, up);
+    el('path', { d: 'M1.8 -1 L4.2 -3.2', stroke: '#c98d5a', 'stroke-width': 0.9, 'stroke-linecap': 'round' }, up);
+    const lamp = el('g', { opacity: 0 }, g);
+    el('circle', { cx: 4.6, cy: -1.6, r: 2.6, fill: 'url(#glowx)', opacity: 0.9 }, lamp);
+    el('rect', { x: 3.7, y: -2.9, width: 1.8, height: 2.4, rx: 0.4, fill: '#ffd36b', stroke: '#5e3b26', 'stroke-width': 0.35 }, lamp);
+    return { hud: hud, up: up, lamp: lamp };
+  }
+  function drawSpark(parent) {
+    const g = el('g', { class: 'spark', 'pointer-events': 'none' }, parent);
+    const halo = el('circle', { cx: 0, cy: -9.6, r: 6.2, fill: 'none', stroke: '#ffe08a', 'stroke-width': 0.8, opacity: 0 }, g);
+    el('circle', { cx: 0, cy: -9, r: 4.2, fill: 'url(#glowx)', opacity: 0.7 }, g);
+    el('path', { d: 'M0 -14.2 C 2.6 -11.2 3.2 -9.6 2.4 -7.6 C 1.8 -6 -1.8 -6 -2.4 -7.6 C -3.2 -9.6 -1.2 -10.8 0 -14.2 Z', fill: 'url(#flamex)' }, g);
+    const pill = el('g', {}, g);
+    el('rect', { x: -6.6, y: 7.4, width: 13.2, height: 4.4, rx: 2.2, fill: '#13203a', opacity: 0.85 }, pill);
+    const pips = [];
+    for (let i = 0; i < 3; i++) pips.push(el('circle', { cx: -4 + i * 4, cy: 9.6, r: 1.45, 'stroke-width': 0.55 }, pill));
+    return { g: g, pips: pips, halo: halo };
+  }
+  function setHalo(e, on) { e.halo.setAttribute('opacity', on ? 0.95 : 0); }
+  function setPips(e, heat) {
+    e.pips.forEach((c, i) => {
+      c.setAttribute('fill', i < heat ? '#ff9a3c' : '#13203a');
+      c.setAttribute('stroke', '#ff9a3c');
+    });
+  }
+  function place(g, x, y) { g.setAttribute('transform', 'translate(' + x.toFixed(2) + ' ' + y.toFixed(2) + ')'); }
+  function buildScene(root, data) {
+    defs(root); backdrop(root);
+    layer.lanes = el('g', {}, root);
+    laneEls = [];
+    data.lanes.forEach((ln, li) => {
+      const g = el('g', {}, layer.lanes);
+      const d = laneD(li);
+      const under = el('path', { d: d, fill: 'none', 'stroke-linecap': 'round' }, g);
+      const base = el('path', { d: d, fill: 'none', 'stroke-linecap': 'round' }, g);
+      const ice = el('path', { d: d, fill: 'none', stroke: '#ffffff', 'stroke-width': 1.1, 'stroke-dasharray': '1.2 1.6', opacity: 0 }, g);
+      laneEls.push({ g: g, under: under, base: base, ice: ice });
+    });
+    layer.hosts = el('g', {}, root);
+    hostEls = [];
+    data.hosts.forEach((h, i) => {
+      const g = el('g', {}, layer.hosts);
+      place(g, h.x, h.y);
+      const hit = el('circle', { cx: 0, cy: -1, r: 10.5, fill: 'transparent' }, g);
+      const body = el('g', {}, g);
+      const rec = { g: g, hit: hit, body: body, kind: h.kind };
+      if (h.kind === 'oven') drawOven(body);
+      else if (h.kind === 'rack') rec.bundle = drawRack(body);
+      else if (h.kind === 'home') Object.assign(rec, drawHome(body));
+      else if (h.kind === 'carrier') Object.assign(rec, drawCarrier(body));
+      hostEls.push(rec);
+    });
+    layer.fx = el('g', { 'pointer-events': 'none' }, root);
+    layer.spark = el('g', { 'pointer-events': 'none' }, root);
+    spark = drawSpark(layer.spark);
+  }
+  function drawLanes(s) {
+    L.lanes.forEach((ln, li) => {
+      const e = laneEls[li];
+      const latentClosed = ln.carrier >= 0 && !((s.CW >> ln.carrier) & 1);
+      const frosted = ln.frost && !((s.M >> li) & 1);
+      if (latentClosed) {
+        e.under.setAttribute('stroke', 'none');
+        e.base.setAttribute('stroke', '#d7e2ee'); e.base.setAttribute('stroke-width', 1.4);
+        e.base.setAttribute('stroke-dasharray', '0.8 2.4'); e.base.setAttribute('opacity', 0.45);
+        e.ice.setAttribute('opacity', 0);
+      } else if (frosted) {
+        e.under.setAttribute('stroke', '#5f8fb8'); e.under.setAttribute('stroke-width', 5);
+        e.base.setAttribute('stroke', '#8fc3ea'); e.base.setAttribute('stroke-width', 3.2);
+        e.base.removeAttribute('stroke-dasharray'); e.base.setAttribute('opacity', 1);
+        e.ice.setAttribute('opacity', 0.95);
+      } else {
+        e.under.setAttribute('stroke', '#8ea2b8'); e.under.setAttribute('stroke-width', 4.2);
+        e.base.setAttribute('stroke', '#dfe8f2'); e.base.setAttribute('stroke-width', 2.6);
+        e.base.removeAttribute('stroke-dasharray'); e.base.setAttribute('opacity', 1);
+        e.ice.setAttribute('opacity', 0);
+      }
+    });
+  }
+  function drawHosts(s) {
+    hostEls.forEach((h, i) => {
+      if (h.kind === 'rack') h.bundle.setAttribute('opacity', ((s.U >> i) & 1) ? 0 : 1);
+      if (h.kind === 'home') {
+        const warm = ((s.W >> i) & 1) === 1;
+        h.win.setAttribute('fill', warm ? '#ffd36b' : '#2b3e5e');
+        h.fam.setAttribute('fill', warm ? '#9a5a2a' : '#16203a');
+        h.glow.setAttribute('opacity', warm ? 0.9 : 0);
+        h.smoke.setAttribute('opacity', warm ? 0.8 : 0);
+      }
+      if (h.kind === 'carrier') {
+        const up = ((s.CW >> i) & 1) === 1;
+        h.hud.setAttribute('opacity', up ? 0 : 1);
+        h.up.setAttribute('opacity', up ? 1 : 0);
+        h.lamp.setAttribute('opacity', up && ((s.CF >> i) & 1) ? 1 : 0);
+      }
+    });
+  }
+  function draw(s) {
+    drawLanes(s); drawHosts(s);
+    const p = P(s.pos); place(spark.g, p[0], p[1]); setPips(spark, s.heat); setHalo(spark, s.fd && !E.isWin(L, s));
+    if (layer.stuck) layer.stuck.setAttribute('opacity', !E.isWin(L, s) && E.moves(L, s).length === 0 ? 0.35 : 0);
+    spark.g.setAttribute('opacity', 1);
+  }
+  function clearGhost() { if (ghost) { ghost.remove(); ghost = null; } }
+  function showPreview(id) {
+    clearGhost();
+    const v = L.ix[id];
+    const r = E.tryTap(L, st, v);
+    ghost = el('g', { 'pointer-events': 'none' }, layer.fx);
+    el('rect', { x: 1, y: 1, width: 98, height: 128, rx: 3, fill: 'none', stroke: '#ffb25e', 'stroke-width': 0.8, 'stroke-dasharray': '2 1.5' }, ghost);
+    if (r.kind === 'move') {
+      const p = P(v);
+      const ge = drawSpark(ghost); place(ge.g, p[0], p[1]); setPips(ge, r.state.heat); setHalo(ge, r.state.fd); ge.g.setAttribute('opacity', 0.62);
+      const hv = hostEls[v];
+      if (r.info.effect === 'home') el('circle', { cx: p[0], cy: p[1] - 1, r: 9, fill: 'url(#glowx)', opacity: 0.7 }, ghost);
+      if (r.info.effect === 'rack') el('circle', { cx: p[0], cy: p[1] - 2.5, r: 7, fill: 'url(#glowx)', opacity: 0.8 }, ghost);
+      if (r.info.effect === 'carrier') {
+        const cg = el('g', { opacity: 0.6 }, ghost); place(cg, p[0], p[1]);
+        const cc = drawCarrier(cg); cc.up.setAttribute('opacity', 1); cc.lamp.setAttribute('opacity', 1);
+        L.lanes.forEach((ln, li) => { if (ln.carrier === v) el('path', { d: laneD(li), fill: 'none', stroke: '#dfe8f2', 'stroke-width': 2.4, opacity: 0.55 }, ghost); });
+      }
+      if (r.info.frost) el('path', { d: laneD(r.info.lane), fill: 'none', stroke: '#dfe8f2', 'stroke-width': 2.6, opacity: 0.6 }, ghost);
+      void hv;
+      return { result: 'move', heat: r.state.heat, effect: r.info.effect, cost: r.info.cost, via: r.info.via };
+    }
+    if (r.kind === 'refused') {
+      const ge = drawSpark(ghost); setPips(ge, 0);
+      const li = r.lane;
+      const from = st.pos;
+      api.tween(api.T.FADE_MS * 2, p => {
+        const q = pointOnLane(li, from, 0.45 * Math.min(1, p * 1.6));
+        place(ge.g, q[0], q[1]);
+        ge.g.setAttribute('opacity', (0.75 * (1 - p)).toFixed(3));
+      });
+      return { result: 'refused', cost: r.cost };
+    }
+    if (r.kind === 'nolane') { hostEls[v].g.setAttribute('opacity', 0.45); return { result: 'nolane' }; }
+    return { result: r.kind };
+  }
+  function clearPreview() {
+    clearGhost();
+    hostEls.forEach(h => h.g.setAttribute('opacity', 1));
+  }
+  function commit(id) {
+    const v = L.ix[id];
+    const r = E.tryTap(L, st, v);
+    if (r.kind === 'move') {
+      const prev = st;
+      st = r.state;
+      hist.push({ state: prev, to: v });
+      animateMove(prev, st, r.info);
+      return { log: { result: 'move', cost: r.info.cost, via: r.info.via, effect: r.info.effect, heat: st.heat } };
+    }
+    if (r.kind === 'refused') {
+      const ge = drawSpark(layer.fx); setPips(ge, 0);
+      const li = r.lane, from = st.pos;
+      api.tween(api.T.FADE_MS, p => {
+        const q = pointOnLane(li, from, 0.45 * Math.min(1, p * 1.5));
+        place(ge.g, q[0], q[1]);
+        ge.g.setAttribute('opacity', (0.8 * (1 - p)).toFixed(3));
+        if (p >= 1) ge.g.remove();
+      });
+      return { log: { result: 'refused', cost: r.cost } };
+    }
+    if (r.kind === 'nolane') {
+      const h = hostEls[v];
+      api.tween(api.T.NOLANE_MS, p => { h.g.setAttribute('opacity', (0.45 + 0.55 * p).toFixed(3)); });
+      return { log: { result: 'nolane' } };
+    }
+    return { log: { result: r.kind } };
+  }
+  function animateMove(prev, next, info) {
+    const li = info.lane, from = prev.pos;
+    const ln = L.lanes[li];
+    drawLanes(prev); drawHosts(prev);
+    const free = info.via !== 'paid';
+    let trail = null;
+    if (free) trail = el('circle', { r: 5.5, fill: 'url(#glowx)', opacity: 0.85 }, layer.fx);
+    setPips(spark, prev.heat - info.cost); setHalo(spark, false);
+    if (info.frost) laneEls[li].ice.setAttribute('opacity', 0.95);
+    api.tween(api.T.MOVE_MS, p => {
+      const e = api.ease(p);
+      const q = pointOnLane(li, from, e);
+      place(spark.g, q[0], q[1]);
+      if (trail) { trail.setAttribute('cx', q[0]); trail.setAttribute('cy', q[1] - 4); trail.setAttribute('opacity', (0.85 * (1 - p * 0.6)).toFixed(3)); }
+      if (info.frost) laneEls[li].ice.setAttribute('opacity', (0.95 * (1 - p)).toFixed(3));
+      if (p >= 1) {
+        if (trail) trail.remove();
+        drawLanes(next);
+        arrival(next, info);
+      }
+    });
+    void ln;
+  }
+  function arrival(next, info) {
+    const h = hostEls[next.pos];
+    if (info.effect === 'rack') {
+      api.tween(api.T.EFFECT_MS, p => {
+        h.bundle.setAttribute('opacity', (1 - p).toFixed(3));
+        h.bundle.setAttribute('transform', 'scale(' + (1 + 0.35 * p).toFixed(3) + ')');
+        if (p >= 1) { h.bundle.removeAttribute('transform'); draw(next); }
+      });
+      setPips(spark, next.heat);
+      return;
+    }
+    if (info.effect === 'home') {
+      api.tween(api.T.EFFECT_MS, p => {
+        h.glow.setAttribute('opacity', (0.9 * p).toFixed(3));
+        h.win.setAttribute('fill', p > 0.4 ? '#ffd36b' : '#2b3e5e');
+        if (p >= 1) draw(next);
+      });
+      return;
+    }
+    if (info.effect === 'carrier') {
+      api.tween(api.T.EFFECT_MS, p => {
+        h.hud.setAttribute('opacity', (1 - p).toFixed(3)); h.up.setAttribute('opacity', p.toFixed(3));
+        if (p >= 1) draw(next);
+      });
+      L.lanes.forEach((ln, li) => { if (ln.carrier === next.pos) drawLanes(next); });
+      return;
+    }
+    draw(next);
+  }
+  function undo() {
+    if (!hist.length) return false;
+    st = hist.pop().state; draw(st); return true;
+  }
+  function restart() { st = E.initial(L); hist = []; draw(st); }
+  function status() {
+    if (E.isWin(L, st)) return 'won';
+    if (E.moves(L, st).length === 0) return 'stuck';
+    return 'play';
+  }
+  function ending() {
+    const route = [];
+    let cur = E.initial(L);
+    hist.forEach(hh => { route.push({ from: hh.state.pos, to: hh.to }); });
+    void cur;
+    const n = route.length;
+    const trail = el('g', { 'pointer-events': 'none' }, layer.fx);
+    const ge = drawSpark(trail); setPips(ge, 3);
+    const lit = el('circle', { r: 7, fill: 'url(#glowx)', opacity: 0.9 }, trail);
+    const pulses = new Set();
+    return api.tween(api.T.ENDING_MAIN_MS, p => {
+      const x = Math.min(n - 1e-9, p * n);
+      const k = Math.floor(x), f = x - k;
+      const seg = route[Math.max(0, Math.min(n - 1, k))];
+      let li = -1;
+      for (const [l, w] of L.adj[seg.from]) if (w === seg.to) { li = l; break; }
+      const q = pointOnLane(li, seg.from, f);
+      place(ge.g, q[0], q[1]); lit.setAttribute('cx', q[0]); lit.setAttribute('cy', q[1] - 4);
+      if (f > 0.9 && !pulses.has(k)) {
+        pulses.add(k);
+        const hh = hostEls[seg.to];
+        if (hh.kind === 'home') {
+          const ring = el('circle', { cx: P(seg.to)[0], cy: P(seg.to)[1] - 1, r: 4, fill: 'none', stroke: '#ffd36b', 'stroke-width': 1.2 }, trail);
+          api.tween(500, pp => { ring.setAttribute('r', (4 + 9 * pp).toFixed(2)); ring.setAttribute('opacity', (1 - pp).toFixed(3)); });
+        }
+      }
+      if (p >= 1) { ge.g.remove(); lit.remove(); }
+    }).then(() => api.tween(api.T.ENDING_WARM_MS, p => {
+      layer.warm.setAttribute('opacity', (0.6 * p).toFixed(3));
+      hostEls.forEach(h => { if (h.snowcap) h.snowcap.setAttribute('transform', 'translate(0 ' + (2.5 * p).toFixed(2) + ')'); if (h.snowcap) h.snowcap.setAttribute('opacity', (1 - p).toFixed(3)); });
+    })).then(() => { trail.remove(); });
+  }
+  function load(sit, wrap, barExtra) {
+    sitData = sit; L = E.Level(sit); st = E.initial(L); hist = [];
+    wrap.innerHTML = ''; barExtra.innerHTML = '';
+    svg = el('svg', { class: 'scene', viewBox: '0 0 100 130', preserveAspectRatio: 'xMidYMid meet' }, wrap);
+    svg.setAttribute('role', 'img');
+    layer = {};
+    buildScene(svg, sit);
+    draw(st);
+  }
+  function targets() {
+    return hostEls.map((h, i) => { h.g.setAttribute('role', 'button'); h.g.setAttribute('aria-label', h.kind === 'home' ? 'house' : h.kind === 'rack' ? 'wood' : h.kind === 'carrier' ? 'villager' : 'oven'); return { id: L.hosts[i], el: h.g }; });
+  }
+  function updateGoals(box) {
+    box.innerHTML = '';
+    L.homes.forEach(i => {
+      const warm = ((st.W >> i) & 1) === 1;
+      const s = document.createElementNS(NS, 'svg'); s.setAttribute('viewBox', '-8 -11 16 17'); s.setAttribute('width', 20); s.setAttribute('height', 21);
+      el('rect', { x: -5.5, y: -3.5, width: 11, height: 8, fill: '#55647d' }, s);
+      el('path', { d: 'M-7 -3.2 L0 -9.5 L7 -3.2 Z', fill: '#3a4660' }, s);
+      el('rect', { x: -2.6, y: -1.8, width: 5.2, height: 4, fill: warm ? '#ffd36b' : '#2b3e5e' }, s);
+      box.appendChild(s);
+    });
+  }
+  function snapshot() {
+    return { pos: L.hosts[st.pos], heat: st.heat, warm: L.homes.filter(i => (st.W >> i) & 1).map(i => L.hosts[i]),
+             used: L.hosts.filter((h, i) => (st.U >> i) & 1), fd: st.fd, moves: hist.length };
+  }
+  function historyIds() { return hist.map(h => L.hosts[h.to]); }
+  function stuckEvent() { return 'deadend'; }
+  function renderStartPicture(pic, sit, firstId) {
+    const saved = { L: L, st: st, hist: hist, sitData: sitData, layer: layer, hostEls: hostEls, laneEls: laneEls, spark: spark, ghost: ghost };
+    sitData = sit; L = E.Level(sit); st = E.initial(L); hist = []; layer = {}; ghost = null;
+    pic.setAttribute('viewBox', '0 0 100 146'); pic.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    const root = el('g', {}, pic);
+    buildScene(root, sit); draw(st);
+    controlStrip(pic, 132);
+    if (firstId && L.ix[firstId] !== undefined) {
+      const p = P(L.ix[firstId]);
+      el('circle', { cx: p[0], cy: p[1] - 1, r: 11.5, fill: 'none', stroke: '#ffb25e', 'stroke-width': 1.6, 'stroke-dasharray': '2.2 1.4' }, pic);
+    }
+    picOwnIds(pic);
+    L = saved.L; st = saved.st; hist = saved.hist; sitData = saved.sitData; layer = saved.layer; hostEls = saved.hostEls;
+    laneEls = saved.laneEls; spark = saved.spark; ghost = saved.ghost;
+  }
+  function controlStrip(pic, y) {
+    el('rect', { x: 0, y: y - 2, width: 100, height: 16, fill: '#13203a' }, pic);
+    picIcon(pic, 6, y, 'undo'); picIcon(pic, 20, y, 'restart');
+  }
+  let picSerial = 0;
+  function picIcon(pic, x, y, kind) {
+    el('rect', { x: x, y: y, width: 11, height: 11, rx: 3, fill: '#26395c' }, pic);
+    const g = el('g', { transform: 'translate(' + (x + 1.5) + ' ' + (y + 1.5) + ') scale(0.25)' }, pic);
+    const S = { fill: 'none', stroke: '#f2f5f9', 'stroke-width': 3, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' };
+    if (kind === 'undo') { el('path', Object.assign({ d: 'M12 9 L5 15 L12 21' }, S), g); el('path', Object.assign({ d: 'M6 15 H19 a7 7 0 0 1 0 14 H14' }, S), g); }
+    else if (kind === 'restart') { el('path', Object.assign({ d: 'M25 16 a9 9 0 1 1 -3 -6.7' }, S), g); el('path', Object.assign({ d: 'M23 4 V10 H17' }, S), g); }
+    else if (kind === 'wait') { el('path', { d: 'M20 6 a11 11 0 1 0 6 18 a9 9 0 1 1 -6 -18 Z', fill: '#f2f5f9' }, g); }
+  }
+  function picOwnIds(pic) {
+    const suf = '_pic' + (++picSerial), map = {};
+    pic.querySelectorAll('[id]').forEach(n => { map[n.id] = n.id + suf; n.id = n.id + suf; });
+    pic.querySelectorAll('*').forEach(n => {
+      ['fill', 'stroke', 'filter', 'clip-path', 'mask'].forEach(a => {
+        const v = n.getAttribute(a);
+        if (v && v.indexOf('url(#') === 0) { const id = v.slice(5, -1); if (map[id]) n.setAttribute(a, 'url(#' + map[id] + ')'); }
+      });
+    });
+  }
+  function init(a) { api = a; }
+  return { init, load, targets, showPreview, clearPreview, commit, undo, restart, status, ending, updateGoals, snapshot,
+           historyIds, stuckEvent, renderStartPicture,
+           _debug: () => ({ state: st, key: E.key(st), hist: hist.length, level: L,
+                            shown: { halo: +spark.halo.getAttribute('opacity') > 0,
+                                     lamps: hostEls.map((h, i) => h.kind === 'carrier' ? [L.hosts[i], +h.lamp.getAttribute('opacity') > 0] : null).filter(Boolean) } }) };
+})();
+
+</script>
+<script>
+
+(function () {
+  'use strict';
+  const CFG = window.Q031_CONFIG;
+  const View = window.CandidateView;
+  const sha256 = window.Q031_SHA256;
+  const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const K = reduced ? 0.25 : 1;
+  const T = {
+    HOLD_MS: 350, MOVE_MS: Math.round(420 * K), EFFECT_MS: Math.round(280 * K), FADE_MS: Math.round(520 * K),
+    NOLANE_MS: Math.round(320 * K), ENDING_MS: 3000, ENDING_MAIN_MS: 2200, ENDING_WARM_MS: 800,
+    CAP_MS: 12 * 60 * 1000, SKIP_AFTER_MS: 3 * 60 * 1000, EXTRA_CAP_MS: 4 * 60 * 1000,
+    TICK_MS: 250, GAP_MS: 1000, SAVE_EVERY: 2, VERIFY_WAIT_MS: 12000, LOCK_STALE_MS: 3000, MAX_BODY: 380000
+  };
+  const P = new URLSearchParams(location.search);
+  const RX = CFG.receiver && typeof CFG.receiver.url === 'string' && CFG.receiver.url.charAt(0) !== '[' ? CFG.receiver : null;
+  const COMPLETION = typeof CFG.completion === 'string' && CFG.completion && CFG.completion.charAt(0) !== '[' ? CFG.completion : null;
+  const S = {
+    code: (P.get('code') || 'LOCAL-TEST').replace(/[^A-Za-z0-9-]/g, '').slice(0, 24),
+    pos: P.get('pos') === '2' ? 2 : 1,
+    label: P.get('label') === 'B' ? 'B' : 'A',
+    other: (P.get('next') || '').replace(/[^A-Za-z0-9._-]/g, ''),
+    otherLabel: P.get('label') === 'B' ? 'A' : 'B',
+    mode: P.get('mode') === 'extra' ? 'extra' : 'main',
+    dev: P.get('dev') === '1',
+    study: !!(RX && P.get('study') === '1')
+  };
+  const INV_K = 'q031k', CRED = /^[A-Za-z0-9_-]{43}$/;
+  const cryptoOK = !!(window.crypto && window.crypto.getRandomValues);
+  const SSX = (function () {
+    if (!S.study) return null;
+    try { const x = window.sessionStorage; x.setItem('q031_probe', '1'); x.removeItem('q031_probe'); return x; } catch (e) { return null; }
+  })();
+  let INVITE = (function () {
+    const h = window.__q031h || location.hash || '';
+    try { delete window.__q031h; } catch (e) { window.__q031h = undefined; }
+    const m = /^#k=([A-Za-z0-9_-]{43})$/.exec(h);
+    if (h) { try { history.replaceState(history.state, '', location.pathname + location.search); } catch (e) {  } }
+    let k = m && S.study ? m[1] : null;
+    if (SSX) {
+      try {
+        if (k) SSX.setItem(INV_K, k);
+        else { const v = SSX.getItem(INV_K); if (v && CRED.test(v)) k = v; }
+      } catch (e) {  }
+    }
+    return k;
+  })();
+  let consented = S.study && (S.pos === 2 || S.mode === 'extra') && P.get('agreed') === '1';
+  let defunct = false, haveLock = false, blocked = false;
+  const persisting = () => S.study && consented && !defunct && !blocked;
+  const logging = () => !S.study || (consented && !defunct && !blocked);
+  const KEY = 'q031s:' + S.code + ':' + CFG.page + ':' + S.mode;
+  const OBK = 'q031ob', RCK = 'q031rc';
+  const MEM = {};
+  let lsOK = null;
+  const LS = {
+    get(k) {
+      if (lsOK === false) return k in MEM ? JSON.parse(MEM[k]) : null;
+      try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return k in MEM ? JSON.parse(MEM[k]) : null; }
+    },
+    set(k, v) {
+      if (lsOK === null) { try { localStorage.setItem('q031_probe', '1'); localStorage.removeItem('q031_probe'); lsOK = true; } catch (e) { lsOK = false; } }
+      if (lsOK === false) { MEM[k] = JSON.stringify(v); return true; }
+      try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) {
+        try { Object.keys(localStorage).forEach(x => { if (x.indexOf('q031') === 0 && !(x in MEM)) MEM[x] = localStorage.getItem(x); }); } catch (e2) {  }
+        MEM[k] = JSON.stringify(v); lsOK = false; return false;
+      }
+    },
+    del(k) { delete MEM[k]; if (lsOK === false) return; try { localStorage.removeItem(k); } catch (e) {  } },
+    keys() { if (lsOK === false) return Object.keys(MEM); try { return Object.keys(localStorage); } catch (e) { return Object.keys(MEM); } }
+  };
+  const ST = { v: 1, stage: 'start', sitIndex: 0, hist: [], qIndex: 0, seq: 0, sid: null, w0: Date.now(), choice: null, finalQueued: false, final: null };
+  const record = {
+    study: 'Q-031', build: CFG.build, page: CFG.page, code: S.code, pos: S.pos, label: S.label, mode: S.mode, sid: null,
+    events: [], situations: [], answers: {}, finalChoice: null, extra: null, completed: false, clock: null
+  };
+  if (consented) record.consent = { carried: true, version: CFG.consentVersion };
+  let sitId = null, dirty = false;
+  function now() { return Date.now() - ST.w0; }
+  function log(ev, data) {
+    if (!logging()) return;
+    const e = { t: now(), sit: sitId, ev: ev };
+    if (data) for (const k in data) e[k] = data[k];
+    record.events.push(e);
+    dirty = true;
+  }
+  function newSid() {
+    const a = new Uint8Array(16);
+    if (cryptoOK) window.crypto.getRandomValues(a); else for (let i = 0; i < 16; i++) a[i] = Math.floor(Math.random() * 256);
+    return Array.from(a, b => b.toString(16).padStart(2, '0')).join('');
+  }
+  function newCap() {
+    const a = new Uint8Array(32); window.crypto.getRandomValues(a);
+    return btoa(String.fromCharCode.apply(null, Array.from(a))).replace(/[+]/g, '-').replace(/[/]/g, '_').replace(/=+$/, '');
+  }
+  const GK = 'q031g:' + S.code;
+  const okSession = v => !!(v && typeof v === 'object' && /^[0-9a-f]{32}$/.test(v.gs) && CRED.test(v.rc));
+  function ssGet(k) { if (!SSX) return null; try { const v = SSX.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
+  function ssSet(k, v) { if (!SSX) return; try { SSX.setItem(k, JSON.stringify(v)); } catch (e) {  } }
+  function getSession() { const a = LS.get(GK); if (okSession(a)) return a; const b = ssGet(GK); return okSession(b) ? b : null; }
+  function startSession() {
+    const s = getSession() || { gs: newSid(), rc: newCap() };
+    LS.set(GK, s); ssSet(GK, s);
+    return s;
+  }
+  let rvMemo = null;
+  function auth() {
+    const s = getSession();
+    if (!INVITE || !s || blocked) return null;
+    if (!rvMemo || rvMemo.rc !== s.rc) rvMemo = { rc: s.rc, rv: sha256('q031-readback-v1:' + s.rc) };
+    return { k: INVITE, gs: s.gs, rv: rvMemo.rv };
+  }
+  function forgetInvite() {
+    INVITE = null; rvMemo = null;
+    if (SSX) { try { SSX.removeItem(INV_K); SSX.removeItem(GK); } catch (e) {  } }
+    LS.del(GK);
+  }
+  function save(force) {
+    if (!persisting()) return;
+    if (ST.stage === 'done') {
+      LS.del(KEY + ':rec'); dirty = false;
+      LS.set(KEY, { st: doneMarker(ST) });
+      return;
+    }
+    if (force || dirty) {
+      record.clock = clockView();
+      if (ST.stage === 'done') LS.del(KEY + ':rec'); else LS.set(KEY + ':rec', record);
+      dirty = false;
+    }
+    LS.set(KEY, { st: ST, clk: clockRaw(), savedAt: Date.now() });
+  }
+  function doneMarker(st) { return { v: st.v, stage: 'done', sid: st.sid, seq: st.seq, final: ST.final }; }
+  function setStage(s, extra) { ST.stage = s; if (extra) Object.assign(ST, extra); dirty = true; save(true); }
+  const TAB = newSid().slice(0, 12);
+  const LKK = 'q031lk:' + S.code;
+  const lockNow = () => LS.get(LKK);
+  function holdLock() { LS.set(LKK, { tab: TAB, t: Date.now(), hidden: !pageVisible() }); haveLock = true; }
+  function takeOver() {
+    const l = lockNow();
+    const live = !!(l && l.tab !== TAB && !l.hidden && Date.now() - (l.t || 0) <= T.LOCK_STALE_MS);
+    holdLock();
+    return live;
+  }
+  function lockLost() { if (!haveLock) return false; const l = lockNow(); return !!(l && l.tab !== TAB); }
+  function goDefunct() {
+    if (defunct) return;
+    accrue(); defunct = true; haveLock = false; phaseOn = false; inputEnabled = false;
+    sheet('finish', '<h1>Continued in another tab</h1><p id="tab-moved">This study is now open in another tab or window. Please continue there. If you have closed it, reload this page to continue here.</p>', []);
+  }
+  window.addEventListener('storage', e => { if (e.key === LKK && lockLost()) goDefunct(); });
+  const CLK = { phase: null, capMs: T.CAP_MS, candMs: 0, sitMs: 0, hides: 0, shows: 0, hiddenMs: 0, gaps: 0, gapMs: 0,
+                resumes: 0, resumeGapMs: 0, mainMs: null, extraMs: null };
+  let clkT = null, clkSit = false, hiddenAt = null, hidden = document.visibilityState === 'hidden', leaving = false;
+  let phaseOn = false, resumeWait = false, sitActive = false, skipShown = false, tickN = 0;
+  const pageVisible = () => !hidden && document.visibilityState !== 'hidden';
+  const counting = () => phaseOn && !resumeWait && pageVisible();
+  function accrue() {
+    const t = performance.now();
+    if (clkT !== null) {
+      let d = t - clkT;
+      if (d > T.GAP_MS) { CLK.gaps++; CLK.gapMs += Math.round(d); d = 0; }
+      if (d > 0) { CLK.candMs += d; if (clkSit) CLK.sitMs += d; }
+    }
+    if (counting()) { clkT = t; clkSit = sitActive; } else { clkT = null; clkSit = false; }
+  }
+  function clockRaw() {
+    const c = Object.assign({}, CLK); c.candMs = Math.floor(CLK.candMs); c.sitMs = Math.floor(CLK.sitMs); return c;
+  }
+  function clockView() {
+    const cand = Math.floor(CLK.candMs), sit = Math.floor(CLK.sitMs);
+    return { phase: CLK.phase, candMs: cand, sitMs: sit, candRemainingMs: CLK.phase ? Math.max(0, CLK.capMs - cand) : null,
+             skipInMs: sitActive ? Math.max(0, T.SKIP_AFTER_MS - sit) : null, hides: CLK.hides, shows: CLK.shows,
+             hiddenMs: CLK.hiddenMs, gaps: CLK.gaps, gapMs: CLK.gapMs, resumes: CLK.resumes, resumeGapMs: CLK.resumeGapMs,
+             mainMs: CLK.mainMs, extraMs: CLK.extraMs };
+  }
+  function checkClock() {
+    if (!phaseOn || resumeWait) return;
+    if (!capExpired && CLK.candMs >= CLK.capMs) onCap();
+    if (sitActive && !skipShown && sitDone === null && CLK.sitMs >= T.SKIP_AFTER_MS) {
+      skipShown = true; $('btn-skip').hidden = false; log('skip_offered', { el: Math.floor(CLK.sitMs) });
+    }
+  }
+  let lastTickAt = null;
+  function tick() {
+    lastTickAt = performance.now();
+    if (defunct) return;
+    if (lockLost()) { goDefunct(); return; }
+    accrue(); checkClock();
+    tickN += 1;
+    if (tickN % T.SAVE_EVERY === 0) { if (haveLock) holdLock(); if (phaseOn || dirty) save(dirty); }
+  }
+  function onHide() {
+    if (hidden || leaving || defunct) return;
+    if (lockLost()) { goDefunct(); return; }
+    accrue(); hidden = true; accrue();
+    if (haveLock) holdLock();
+    CLK.hides++; hiddenAt = Date.now();
+    log('page_hidden');
+    save(true);
+    closingCopy();
+  }
+  function onShow() {
+    if (!hidden || document.visibilityState === 'hidden' || defunct) return;
+    if (lockLost()) { goDefunct(); return; }
+    hidden = false; CLK.shows++;
+    if (haveLock) holdLock();
+    if (hiddenAt !== null) { CLK.hiddenMs += Math.max(0, Date.now() - hiddenAt); hiddenAt = null; }
+    accrue();
+    log('page_shown');
+    save(true);
+    flush();
+  }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') onHide(); else onShow(); });
+  window.addEventListener('pagehide', onHide);
+  window.addEventListener('pagehide', e => { if (!e.persisted && haveLock && !lockLost()) { LS.del(LKK); haveLock = false; } });
+  window.addEventListener('pageshow', e => { if (e.persisted && leaving) { location.reload(); return; } if (e.persisted) onShow(); });
+  const ERR = ['Error', 'TypeError', 'RangeError', 'ReferenceError', 'SyntaxError', 'EvalError', 'URIError', 'SecurityError',
+               'QuotaExceededError', 'NotAllowedError', 'NetworkError', 'AbortError', 'InvalidStateError', 'DataCloneError'];
+  function errCat(x) { const n = x && typeof x === 'object' ? x.name : null; return ERR.indexOf(n) >= 0 ? n : 'Other'; }
+  window.addEventListener('error', e => log('page_error', { kind: 'error', cat: errCat(e && e.error) }));
+  window.addEventListener('unhandledrejection', e => log('page_error', { kind: 'rejection', cat: errCat(e && e.reason) }));
+  const tweens = new Set();
+  function tween(ms, fn) {
+    return new Promise(resolve => {
+      const tw = { start: performance.now(), ms: Math.max(1, ms), fn: fn, resolve: resolve, done: false };
+      tweens.add(tw);
+      function frame() {
+        if (tw.done) return;
+        const p = Math.min(1, (performance.now() - tw.start) / tw.ms);
+        try { fn(p); } catch (e) { console.error(e); }
+        if (p >= 1) { tw.done = true; tweens.delete(tw); resolve(); } else requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+  function finishAll() {
+    for (const tw of Array.from(tweens)) {
+      if (tw.done) continue;
+      tw.done = true; tweens.delete(tw);
+      try { tw.fn(1); } catch (e) { console.error(e); }
+      tw.resolve();
+    }
+  }
+  function busy() { return tweens.size > 0; }
+  const ease = p => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
+  const $ = id => document.getElementById(id);
+  function show(id) {
+    document.querySelectorAll('.screen').forEach(el => { el.hidden = el.id !== id; });
+  }
+  let endingPlaying = false;
+  let inputEnabled = false;
+  function bindTarget(el, id) {
+    el.setAttribute('data-tgt', id);
+    let holdTimer = null, previewing = false, active = false, pid = null;
+    function cancel(reason) {
+      if (!active) return;
+      active = false;
+      if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+      if (previewing) { View.clearPreview(); previewing = false; }
+      log('cancel', { target: id, reason: reason });
+    }
+    el.addEventListener('pointerdown', ev => {
+      if (!inputEnabled || endingPlaying) return;
+      ev.preventDefault();
+      finishAll();
+      active = true; pid = ev.pointerId; previewing = false;
+      try { el.setPointerCapture(ev.pointerId); } catch (e) {  }
+      log('press', { target: id });
+      holdTimer = setTimeout(() => {
+        holdTimer = null;
+        if (!active) return;
+        previewing = true;
+        const d = View.showPreview(id);
+        log('hold', { target: id, preview: d });
+      }, T.HOLD_MS);
+    });
+    el.addEventListener('pointermove', ev => {
+      if (!active || ev.pointerId !== pid) return;
+      const hit = document.elementFromPoint(ev.clientX, ev.clientY);
+      const t = hit && hit.closest ? hit.closest('[data-tgt]') : null;
+      if (t !== el) cancel('slid-off');
+    });
+    el.addEventListener('pointerup', ev => {
+      if (!active || ev.pointerId !== pid) return;
+      active = false;
+      if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+      if (previewing) { View.clearPreview(); previewing = false; }
+      commit(id);
+    });
+    el.addEventListener('pointercancel', () => cancel('pointercancel'));
+    el.addEventListener('contextmenu', ev => ev.preventDefault());
+  }
+  function commit(id) {
+    accrue(); checkClock();
+    if (!inputEnabled || endingPlaying) return;
+    finishAll();
+    const r = View.commit(id);
+    log('tap', Object.assign({ target: id }, r.log || {}));
+    afterAction();
+  }
+  function iconUndo() { return '<svg viewBox="0 0 32 32"><path d="M12 9 L5 15 L12 21" fill="none" stroke="#f2f5f9" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 15 H19 a7 7 0 0 1 0 14 H14" fill="none" stroke="#f2f5f9" stroke-width="3" stroke-linecap="round"/></svg>'; }
+  function iconRestart() { return '<svg viewBox="0 0 32 32"><path d="M25 16 a9 9 0 1 1 -3 -6.7" fill="none" stroke="#f2f5f9" stroke-width="3" stroke-linecap="round"/><path d="M23 4 V10 H17" fill="none" stroke="#f2f5f9" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>'; }
+  function buildPlayScreen() {
+    const play = $('play');
+    play.innerHTML = '';
+    const head = document.createElement('div'); head.className = 'head';
+    head.innerHTML = '<div class="label" id="cand-label"></div><div class="goals" id="goals"></div><div class="dots" id="dots"></div>';
+    const wrap = document.createElement('div'); wrap.className = 'scene-wrap'; wrap.id = 'scene-wrap';
+    const bar = document.createElement('div'); bar.className = 'bar'; bar.id = 'bar';
+    bar.innerHTML = '<button class="ctl" id="btn-undo" aria-label="Undo">' + iconUndo() + '</button>' +
+      '<button class="ctl" id="btn-restart" aria-label="Restart">' + iconRestart() + '</button>' +
+      '<div class="spacer" id="bar-extra"></div>' +
+      '<button class="skip" id="btn-skip" hidden>Next challenge</button>' +
+      '<button class="skip" id="btn-next" hidden>Next challenge</button>';
+    play.appendChild(head); play.appendChild(wrap); play.appendChild(bar);
+    $('btn-undo').addEventListener('click', () => {
+      accrue(); checkClock();
+      if (!inputEnabled || endingPlaying) return;
+      finishAll();
+      const ok = View.undo();
+      log('undo', { done: ok });
+      afterAction();
+    });
+    $('btn-restart').addEventListener('click', () => {
+      accrue(); checkClock();
+      if (!inputEnabled || endingPlaying) return;
+      finishAll();
+      View.restart();
+      log('restart');
+      afterAction();
+    });
+    $('btn-skip').addEventListener('click', () => {
+      accrue(); checkClock();
+      if (!inputEnabled || endingPlaying || !skipShown) return;
+      log('skip');
+      endSituation('skipped');
+    });
+    $('btn-next').addEventListener('click', () => {
+      if (!awaitingNext) return;
+      awaitingNext = false;
+      $('btn-next').hidden = true; $('btn-next').classList.remove('pulse');
+      log('next');
+      startSituation(sitIndex + 1);
+    });
+  }
+  let sitList = [], sitIndex = 0;
+  let sitDone = null, phaseResolve = null, curSummary = null, capExpired = false, awaitingNext = false;
+  function setDots() {
+    const dots = $('dots'); dots.innerHTML = '';
+    if (S.mode === 'extra') return;
+    sitList.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i < sitIndex ? ' done' : i === sitIndex ? ' now' : '');
+      dots.appendChild(d);
+    });
+  }
+  function afterAction() {
+    View.updateGoals($('goals'));
+    ST.hist = View.historyIds(); dirty = true;
+    const st = View.status();
+    const stuck = st === 'stuck';
+    $('btn-undo').classList.toggle('pulse', stuck);
+    $('btn-restart').classList.toggle('pulse', stuck);
+    if (stuck && curSummary && !curSummary._stuckLogged) { log(View.stuckEvent()); curSummary._stuckLogged = true; }
+    if (!stuck && curSummary) curSummary._stuckLogged = false;
+    if (st === 'won' && !endingPlaying && sitDone === null) {
+      inputEnabled = false;
+      endingPlaying = true;
+      log('win');
+      waitIdle().then(() => View.ending()).then(() => {
+        endingPlaying = false;
+        endSituation('solved');
+      });
+    }
+  }
+  function waitIdle() {
+    return new Promise(res => { (function chk() { if (!busy()) res(); else requestAnimationFrame(chk); })(); });
+  }
+  function loadSituation(i) {
+    sitIndex = i;
+    const sit = sitList[i];
+    sitId = sit.id;
+    $('cand-label').textContent = 'Candidate ' + S.label;
+    setDots();
+    if (View.setRebind) View.setRebind(null);
+    View.load(sit, $('scene-wrap'), $('bar-extra'));
+    View.targets().forEach(t => bindTarget(t.el, t.id));
+    if (View.setRebind) View.setRebind(list => list.forEach(t => bindTarget(t.el, t.id)));
+    View.updateGoals($('goals'));
+    $('btn-skip').hidden = true;
+    $('btn-undo').classList.remove('pulse'); $('btn-restart').classList.remove('pulse');
+  }
+  function startSituation(i) {
+    accrue();
+    curSummary = { id: sitList[i].id, start: now(), end: null, outcome: null, taps: 0, holds: 0, undos: 0, restarts: 0, elMs: null };
+    record.situations.push(curSummary);
+    loadSituation(i);
+    CLK.sitMs = 0; skipShown = false; sitDone = null; sitActive = true;
+    accrue();
+    ST.sitIndex = i; ST.hist = [];
+    inputEnabled = true;
+    log('sit_start', { snapshot: View.snapshot(), el: Math.floor(CLK.candMs) });
+    save(true);
+    checkClock();
+  }
+  function resumeSituation(i, hist) {
+    curSummary = record.situations[record.situations.length - 1];
+    loadSituation(i);
+    View.restart();
+    (hist || []).forEach(id => { View.commit(id); finishAll(); });
+    sitDone = null; sitActive = true;
+    skipShown = CLK.sitMs >= T.SKIP_AFTER_MS; $('btn-skip').hidden = !skipShown;
+    accrue();
+    inputEnabled = true;
+    afterAction();
+  }
+  function endSituation(outcome) {
+    if (sitDone !== null) return;
+    accrue();
+    sitDone = outcome;
+    sitActive = false;
+    accrue();
+    inputEnabled = false;
+    finishAll();
+    curSummary.end = now(); curSummary.outcome = outcome; curSummary.elMs = Math.floor(CLK.sitMs);
+    const c = record.events.filter(e => e.sit === sitId);
+    curSummary.taps = c.filter(e => e.ev === 'tap').length;
+    curSummary.holds = c.filter(e => e.ev === 'hold').length;
+    curSummary.undos = c.filter(e => e.ev === 'undo').length;
+    curSummary.restarts = c.filter(e => e.ev === 'restart').length;
+    curSummary.history = View.historyIds();
+    delete curSummary._stuckLogged;
+    log('sit_end', { outcome: outcome, snapshot: View.snapshot(), el: Math.floor(CLK.candMs) });
+    sitId = null;
+    save(true);
+    enqueue(false);
+    if (outcome === 'timeout' || capExpired || S.mode === 'extra' || sitIndex >= sitList.length - 1) {
+      if (phaseResolve) phaseResolve();
+      return;
+    }
+    if (outcome === 'solved') {
+      awaitingNext = true;
+      $('btn-skip').hidden = true;
+      $('btn-next').hidden = false; $('btn-next').classList.add('pulse');
+      return;
+    }
+    startSituation(sitIndex + 1);
+  }
+  function onCap() {
+    if (capExpired) return;
+    capExpired = true;
+    log('timeout', { el: Math.floor(CLK.candMs) });
+    if (endingPlaying) return;
+    finishAll();
+    if (endingPlaying) return;
+    if (awaitingNext || !sitActive) { if (phaseResolve) phaseResolve(); return; }
+    if (sitDone === null) endSituation('timeout');
+  }
+  function runPhase(list, capMsArg, phase, resuming) {
+    return new Promise(resolve => {
+      sitList = list; capExpired = false; awaitingNext = false;
+      CLK.capMs = capMsArg; CLK.phase = phase;
+      if (!resuming) { CLK.candMs = 0; CLK.sitMs = 0; }
+      phaseResolve = () => {
+        phaseResolve = null; awaitingNext = false; $('btn-next').hidden = true;
+        accrue(); phaseOn = false; sitActive = false; accrue();
+        if (phase === 'main') CLK.mainMs = Math.floor(CLK.candMs); else CLK.extraMs = Math.floor(CLK.candMs);
+        CLK.phase = null;
+        save(true);
+        resolve();
+      };
+      accrue(); phaseOn = true; accrue();
+      show('play');
+      if (!resuming) startSituation(0);
+      else {
+        const last = record.situations[record.situations.length - 1];
+        if (!last) startSituation(0);
+        else if (last.outcome === null) resumeSituation(ST.sitIndex, ST.hist);
+        else if (last.outcome === 'timeout' || S.mode === 'extra' || ST.sitIndex >= list.length - 1) phaseResolve();
+        else startSituation(ST.sitIndex + 1);
+      }
+      checkClock();
+    });
+  }
+  const QUESTIONS = [
+    { id: 'Q1', text: 'What were you trying to do in these challenges?' },
+    { id: 'Q2', text: 'How would you explain how this candidate works to someone who has not played it?' },
+    { id: 'Q3', text: 'Here is the start of one challenge you played. The dashed circle marks the first thing you chose. Why did you choose that place or control? What did you choose next, and why?', picture: true },
+    { id: 'Q4', text: 'What changed after that action?', picture: true },
+    { id: 'Q5', text: 'When a challenge ended, what did the ending show?', needsSolved: true },
+    { id: 'Q6', text: 'Did anything behave differently from what you expected?' },
+    { id: 'Q7', text: 'Would you choose another challenge from this candidate now?', options: ['Yes', 'No', 'Not sure'] }
+  ];
+  function anchorSituation() {
+    record.situations.forEach(s => {
+      if (s.history && s.history.length) return;
+      const firsts = record.events.filter(e => e.sit === s.id && e.ev === 'tap' && (e.result === 'move' || e.result === 'act'));
+      s.history = firsts.map(e => e.target);
+    });
+    const played = record.situations.filter(s => s.history && s.history.length > 0);
+    const dec = played.filter(s => CFG.decisionIds.indexOf(s.id) >= 0 && s.history.length >= 2);
+    const pick = dec.length ? dec[dec.length - 1] : (played.length ? played[played.length - 1] : null);
+    return pick;
+  }
+  function askQuestions(startAt) {
+    return new Promise(resolve => {
+      const anchor = anchorSituation();
+      const solvedAny = record.situations.some(s => s.outcome === 'solved');
+      const qs = QUESTIONS.filter(q => !(q.picture && !anchor) && !(q.needsSolved && !solvedAny));
+      record.answers.anchor = anchor ? { sit: anchor.id, first: anchor.history[0], second: anchor.history[1] || null } : null;
+      QUESTIONS.forEach(q => { if (qs.indexOf(q) < 0) record.answers[q.id] = { skipped_by_rule: true }; });
+      let k = startAt || 0;
+      const scr = $('question');
+      function render() {
+        if (k >= qs.length) { log('questions_end'); resolve(); return; }
+        const q = qs[k];
+        scr.innerHTML = '';
+        const w = document.createElement('div'); w.className = 'qwrap';
+        w.innerHTML = '<div class="qn">Candidate ' + S.label + ' · question ' + (k + 1) + ' of ' + qs.length + '</div>' +
+          '<div class="qtext">' + q.text + '</div>';
+        if (q.picture && anchor) {
+          const pic = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          pic.setAttribute('class', 'pic');
+          View.renderStartPicture(pic, CFG.situations.concat([CFG.extra]).find(s => s.id === anchor.id), anchor.history[0]);
+          w.appendChild(pic);
+        }
+        let choice = null;
+        if (q.options) {
+          const o = document.createElement('div'); o.className = 'opts';
+          q.options.forEach(opt => {
+            const b = document.createElement('button'); b.className = 'btn quiet'; b.textContent = opt;
+            b.addEventListener('click', () => { choice = opt; o.querySelectorAll('.btn').forEach(x => x.classList.toggle('sel', x === b)); });
+            o.appendChild(b);
+          });
+          w.appendChild(o);
+        }
+        const ta = document.createElement('textarea'); ta.maxLength = 600;
+        ta.setAttribute('aria-label', 'Your answer');
+        if (q.options) ta.placeholder = 'Why? (optional)';
+        w.appendChild(ta);
+        const fine = document.createElement('div'); fine.className = 'fine sheet'; fine.style.padding = '0';
+        fine.innerHTML = '<p class="fine">Short answers are fine. "Not sure" is a fine answer. Please do not include names or contact details.</p>';
+        w.appendChild(fine);
+        const next = document.createElement('button'); next.className = 'btn'; next.textContent = 'Next';
+        next.addEventListener('click', () => {
+          record.answers[q.id] = { text: ta.value.slice(0, 600), choice: choice, t: now() };
+          log('answer', { q: q.id });
+          k += 1; ST.qIndex = k; save(true);
+          render();
+        });
+        w.appendChild(next);
+        scr.appendChild(w);
+        scr.scrollTop = 0;
+      }
+      if (!startAt) log('questions_start');
+      show('question');
+      render();
+    });
+  }
+  const OB = () => LS.get(OBK) || {};
+  const mine = ob => Object.keys(ob).filter(sid => ob[sid] && ob[sid].code === S.code);
+  const RC = () => LS.get(RCK) || {};
+  function envelope(e, a) {
+    return JSON.stringify({ q: 'Q031', sid: e.sid, seq: e.seq, final: e.final, test: !!CFG.testRows, digest: e.digest, body: e.body, auth: a })
+      .replace(/[\u007f-\uffff]/g, c => '\\u' + ('000' + c.charCodeAt(0).toString(16)).slice(-4));
+  }
+  function serialize() {
+    let body = JSON.stringify(record);
+    if (body.length <= T.MAX_BODY) return body;
+    const r = Object.assign({}, record);
+    const all = record.events, drops = [['press'], ['press', 'hold', 'cancel']];
+    for (const d of drops) {
+      r.events = all.filter(e => d.indexOf(e.ev) < 0);
+      r.compacted = { dropped: d, kept: r.events.length, of: all.length, fromEvent: 0 };
+      body = JSON.stringify(r);
+      if (body.length <= T.MAX_BODY) return body;
+    }
+    const keep = r.events;
+    let n = keep.length;
+    while (n > 0 && body.length > T.MAX_BODY) {
+      n = Math.floor(n * 0.8);
+      r.events = keep.slice(keep.length - n);
+      r.compacted = { dropped: drops[1], kept: n, of: all.length, fromEvent: keep.length - n };
+      body = JSON.stringify(r);
+    }
+    return body;
+  }
+  function enqueue(final) {
+    if (!persisting() || !ST.sid) return null;
+    accrue(); record.clock = clockView();
+    const body = serialize();
+    ST.seq += 1;
+    const e = { sid: ST.sid, seq: ST.seq, final: !!final, body: body, digest: sha256(body), code: S.code };
+    const ob = OB(); ob[ST.sid] = e; LS.set(OBK, ob);
+    save(true);
+    flush();
+    return e;
+  }
+  function closingCopy() {
+    if (!persisting() || !ST.sid || ST.stage === 'done') return;
+    const e = ST.finalQueued ? OB()[ST.sid] : enqueue(false);
+    const a = auth();
+    if (!e || !a) return;
+    const env = envelope(e, a);
+    try { if (env.length < 60000 && navigator.sendBeacon) navigator.sendBeacon(RX.url, new Blob([env], { type: 'text/plain' })); } catch (err) {  }
+  }
+  let jsonpN = 0;
+  function readback(sid) {
+    const s = getSession();
+    if (!s) return Promise.resolve(null);
+    const u = RX.url + (RX.url.indexOf('?') < 0 ? '?' : '&') + 'op=receipt&sid=' + encodeURIComponent(sid) + '&gs=' + s.gs + '&rc=' + s.rc;
+    if (RX.readback === 'json') {
+      return new Promise(res => {
+        const to = setTimeout(() => res(null), 10000);
+        fetch(u, { cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer' }).then(r => (r.ok ? r.json() : null)).then(v => { clearTimeout(to); res(v); }, () => { clearTimeout(to); res(null); });
+      });
+    }
+    return new Promise(res => {
+      const cb = '__q031rb' + Date.now().toString(36) + (jsonpN++), sc = document.createElement('script');
+      let to = null;
+      const done = v => { clearTimeout(to); window[cb] = function () {}; if (sc.parentNode) sc.parentNode.removeChild(sc); res(v); };
+      window[cb] = v => done(v);
+      sc.onerror = () => done(null);
+      to = setTimeout(() => done(null), 10000);
+      sc.referrerPolicy = 'no-referrer';
+      sc.src = u + '&cb=' + cb;
+      document.head.appendChild(sc);
+    });
+  }
+  const pause = ms => new Promise(r => setTimeout(r, ms));
+  async function deliver(e) {
+    const a = auth();
+    if (!a) return { ok: false, why: 'no_invite' };
+    const env = envelope(e, a);
+    try { await fetch(RX.url, { method: 'POST', mode: 'no-cors', cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer', headers: { 'Content-Type': 'text/plain' }, body: env, keepalive: env.length < 60000 }); }
+    catch (err) {  }
+    for (let k = 0; k < 2; k++) {
+      if (defunct) return { ok: false, why: 'defunct' };
+      const r = await readback(e.sid);
+      if (r && r.ok === true && r.sid === e.sid) {
+        if (r.seq === e.seq && r.digest === e.digest && r.final === e.final) return { ok: true, r: r };
+        if (r.final && !(e.final && r.seq === e.seq)) return { superseded: true, stored: r.seq };
+        if (r.seq === e.seq) return { bump: e.seq + 1, why: 'mismatch', stored: r.seq };
+        if (r.seq > e.seq) return { bump: r.seq + 1, why: 'behind', stored: r.seq };
+        return { ok: false, why: 'not_stored' };
+      }
+      if (r && r.ok === false && (r.error === 'not_found' || r.error === 'unauthorized')) return { ok: false, why: r.error };
+      await pause(800);
+    }
+    return { ok: false, why: 'no_readback' };
+  }
+  let flushing = false, flushAgain = false, retryT = null, retryN = 0;
+  const waiters = [];
+  async function flush() {
+    if (!S.study || !RX || !consented || defunct || blocked || !auth()) return;
+    if (flushing) { flushAgain = true; return; }
+    flushing = true;
+    let bumps = 0;
+    try {
+      do {
+        flushAgain = false;
+        const ob = OB();
+        const sids = mine(ob).sort((a, b) => (a === ST.sid ? -1 : b === ST.sid ? 1 : 0));
+        for (const sid of sids) {
+          if (defunct) break;
+          const e = ob[sid];
+          const d = await deliver(e);
+          if (d.ok) {
+            const rc = RC(); rc[sid] = { seq: e.seq, final: e.final, receipt: d.r.receipt, code: d.r.code || null }; LS.set(RCK, rc);
+            const cur = OB(); if (cur[sid] && cur[sid].seq === e.seq) { delete cur[sid]; LS.set(OBK, cur); }
+            if (sid === ST.sid) log('receipt', { seq: e.seq, receipt: d.r.receipt });
+          } else if (d.superseded) {
+            const cur = OB(); if (cur[sid] && cur[sid].seq === e.seq) { delete cur[sid]; LS.set(OBK, cur); }
+            if (sid === ST.sid) log('superseded', { seq: e.seq, stored: d.stored });
+          } else if (d.bump && bumps < 3) {
+            bumps += 1;
+            const cur = OB();
+            if (cur[sid] && cur[sid].seq === e.seq) {
+              if (sid === ST.sid) {
+                log(d.why === 'behind' ? 'seq_behind' : 'stored_mismatch', { seq: e.seq, stored: d.stored });
+                ST.seq = Math.max(ST.seq, d.bump - 1);
+                enqueue(e.final);
+              } else { cur[sid].seq = d.bump; LS.set(OBK, cur); }
+            }
+            flushAgain = true;
+          }
+        }
+      } while (flushAgain);
+    } finally {
+      flushing = false;
+      if (mine(OB()).length) { if (!retryT) { const d = [2, 5, 10, 20, 40, 60][Math.min(retryN++, 5)] * 1000; retryT = setTimeout(() => { retryT = null; flush(); }, d); } }
+      else { retryN = 0; if (ST.stage === 'done') forgetInvite(); }
+      waiters.slice().forEach(w => w());
+    }
+  }
+  window.addEventListener('online', () => { retryN = 0; flush(); });
+  function verified(sid, seq) { const r = RC()[sid]; return !!(r && r.seq >= seq); }
+  function waitVerified(sid, seq, ms) {
+    return new Promise(res => {
+      if (verified(sid, seq)) { res(true); return; }
+      let to = null;
+      const w = () => { if (verified(sid, seq)) settle(true); };
+      const settle = v => { clearTimeout(to); const i = waiters.indexOf(w); if (i >= 0) waiters.splice(i, 1); res(v); };
+      waiters.push(w);
+      to = setTimeout(() => settle(verified(sid, seq)), ms);
+      flush();
+    });
+  }
+  async function savedOrRetry(why) {
+    if (!persisting() || !ST.sid) return true;
+    const ob = OB()[ST.sid];
+    const seq = ob ? ob.seq : ST.seq;
+    const start = why === 'agreement';
+    let tries = 0;
+    for (;;) {
+      sheet('saving', start ? '<h1>Starting</h1><p id="saving-status">Connecting to the study…</p>' : '<h1>Saving</h1><p id="saving-status">Saving your answers…</p>', []);
+      if (await waitVerified(ST.sid, seq, T.VERIFY_WAIT_MS)) { log('saved_verified', { why: why, seq: seq }); return true; }
+      tries += 1;
+      log('save_unverified', { why: why, tries: tries });
+      save(true);
+      await new Promise(res => {
+        const w = () => { if (verified(ST.sid, seq)) { const i = waiters.indexOf(w); if (i >= 0) waiters.splice(i, 1); res(); } };
+        waiters.push(w);
+        const nocode = tries >= 2 ? '<p class="fine" id="nocode">If this keeps failing, you can stop here: return to ' + CFG.platform +
+          ', use its option for finishing without a completion code, and message the researcher with your study code <b>' + S.code +
+          '</b>. Genuine participation will be paid.</p>' : '';
+        sheet('saving', (start ? '<h1 id="agree-unverified">Could not start yet</h1><p id="saving-status">The study could not confirm that this browser is connected to your study session. If you have already started this study in another browser or on another device, please continue there. Otherwise, please check your connection and try again.</p>'
+          : '<h1>Not saved yet</h1><p id="saving-status">Your answers have not been confirmed as saved yet. Please check your connection and try again.</p>') + nocode,
+          [{ text: 'Try again', id: 'btn-retry', on: () => { const i = waiters.indexOf(w); if (i >= 0) waiters.splice(i, 1); retryN = 0; res(); } }]);
+      });
+    }
+  }
+  function sheet(id, html, buttons) {
+    const scr = $(id); scr.innerHTML = '';
+    const w = document.createElement('div'); w.className = 'sheet'; w.style.display = 'flex'; w.style.flexDirection = 'column';
+    w.innerHTML = html;
+    const c = document.createElement('div'); c.className = 'choices';
+    buttons.forEach(b => {
+      const el = document.createElement('button'); el.className = 'btn' + (b.quiet ? ' quiet' : ''); el.textContent = b.text;
+      if (b.id) el.id = b.id;
+      el.addEventListener('click', b.on); c.appendChild(el);
+    });
+    w.appendChild(c); scr.appendChild(w); show(id);
+  }
+  function intro() {
+    return new Promise(resolve => {
+      sheet('intro', '<h1>Candidate ' + S.label + '</h1><p>Five short challenges. Play them in whatever way makes sense to you.</p>',
+        [{ text: 'Start', id: 'btn-start', on: () => { log('intro_start'); resolve(); } }]);
+    });
+  }
+  function resumeScreen() {
+    return new Promise(resolve => {
+      resumeWait = true; accrue();
+      sheet('resume', '<h1>Candidate ' + S.label + '</h1><p>Continue where you left off.</p>',
+        [{ text: 'Continue', id: 'btn-resume', on: () => { resumeWait = false; accrue(); resolve(); } }]);
+    });
+  }
+  function consent() {
+    return new Promise(resolve => {
+      sheet('consent', CFG.consentHtml, [
+        { text: 'Start', id: 'btn-consent', on: () => { if ($('agree').checked) { consented = true; record.consent = { at: 0, version: CFG.consentVersion }; resolve(true); } } },
+        { text: 'I do not agree', quiet: true, on: () => { forgetInvite(); resolve(false); } }]);
+      const btn = $('btn-consent'); btn.disabled = true;
+      $('agree').addEventListener('change', () => { btn.disabled = !$('agree').checked; });
+    });
+  }
+  function goOther(extraParams) {
+    const u = S.other + '?code=' + encodeURIComponent(S.code) + '&next=' + encodeURIComponent('q031-' + CFG.page + '.html') +
+      extraParams + (S.dev ? '&dev=1' : '') + (S.study ? '&study=1' : '') + (consented ? '&agreed=1' : '');
+    window.__q031.navigatedTo = u;
+    leaving = true;
+    if (haveLock && !lockLost()) LS.del(LKK);
+    haveLock = false;
+    location.href = u;
+  }
+  function completionHtml(rc) {
+    if (rc && rc.code && COMPLETION) {
+      const link = COMPLETION + (COMPLETION.indexOf('?') < 0 ? '?' : '&') + 'cc=' + encodeURIComponent(rc.code);
+      return '<p>Your answers arrived (receipt ' + rc.receipt + '). Return to ' + CFG.platform + ' with completion code <b id="completion-code">' + rc.code +
+        '</b>.</p><div class="choices"><a class="btn" id="completion-link" style="display:flex;align-items:center;justify-content:center;text-decoration:none" href="' + link + '">Finish on ' + CFG.platform + '</a></div>';
+    }
+    return '<p id="completion-nocode">Your answers arrived' + (rc && rc.receipt ? ' (receipt ' + rc.receipt + ')' : '') + ', but the completion code could not be shown. Please return to ' + CFG.platform +
+      ', use its option for finishing without a completion code, and message the researcher with your study code. Genuine participation will be paid.</p>';
+  }
+  function inviteStop(why) {
+    blocked = true; consented = false;
+    const tail = ' If this keeps happening, message the researcher through ' + CFG.platform + ' with your study code <b>' + S.code + '</b>.';
+    if (why === 'storage') {
+      sheet('finish', '<h1>This browser cannot run the study</h1><p id="invite-storage">This page needs to keep a little information in this browser while you take part, and this browser is not allowing it (site data may be blocked for this page). Nothing has been recorded or sent. Please open your study link from ' +
+        CFG.platform + ' again in Google Chrome with site data allowed.' + tail + '</p>', []);
+      return;
+    }
+    sheet('finish', '<h1>Please reopen your study link</h1><p id="invite-missing">This page was not opened from your personal study link, so it has stopped and is not recording or sending anything. Please return to ' +
+      CFG.platform + ' and open your study link from there again, in this browser; anything already saved will be kept.' + tail + '</p>', []);
+  }
+  function inviteProblem(resuming) {
+    if (!SSX || !cryptoOK) return 'storage';
+    if (!INVITE) return 'invite';
+    if ((resuming || S.pos === 2 || S.mode === 'extra') && !getSession()) return 'session';
+    return null;
+  }
+  function showDone() {
+    let rc = ST.final;
+    if (!rc) { const own = RC()[ST.sid]; if (own && own.final) rc = own; }
+    sheet('finish', '<h1>Thank you</h1><p>You are done. Your study code is <b>' + S.code + '</b>.</p><div id="completion">' + completionHtml(rc) + '</div>', []);
+  }
+  let finishing = false;
+  async function finish() {
+    if (finishing) return;
+    finishing = true;
+    if (!ST.finalQueued) {
+      log('finish');
+      record.completed = true;
+      ST.finalQueued = true;
+      setStage('finish');
+      enqueue(true);
+    }
+    const done = '<h1>Thank you</h1><p>You are done. Your study code is <b>' + S.code + '</b>.</p>';
+    if (!persisting()) { sheet('finish', done + '<div id="completion"></div>', []); return; }
+    await savedOrRetry('final');
+    const rc = RC()[ST.sid] || {};
+    ST.final = { receipt: rc.receipt || null, code: rc.code || null };
+    sheet('finish', done + '<div id="completion">' + completionHtml(rc) + '</div>', []);
+    ST.stage = 'done'; save(true);
+    try {
+      const pre = 'q031s:' + S.code + ':';
+      LS.keys().forEach(k => {
+        if (k.indexOf(pre) !== 0) return;
+        if (/:rec$/.test(k)) { LS.del(k); return; }
+        const o = LS.get(k); if (o && o.st) LS.set(k, { st: doneMarker(o.st) });
+      });
+    } catch (e) {  }
+    if (haveLock && !lockLost()) LS.del(LKK);
+    haveLock = false;
+    if (!mine(OB()).length) forgetInvite();
+  }
+  function finalChoice() {
+    return new Promise(resolve => {
+      sheet('choice', '<h1>One more?</h1><p>You have tried Candidate A and Candidate B. You can play one more challenge from either, or stop here. All three options receive the same payment.</p>',
+        [{ text: 'One more Candidate A challenge', id: 'choice-A', quiet: true, on: () => pick('A') },
+         { text: 'One more Candidate B challenge', id: 'choice-B', quiet: true, on: () => pick('B') },
+         { text: 'Stop here', id: 'choice-stop', quiet: true, on: () => pick('stop') }]);
+      function pick(c) { document.querySelectorAll('#choice .btn').forEach(b => { b.disabled = true; }); resolve(c); }
+    });
+  }
+  function between() {
+    return new Promise(resolve => {
+      sheet('between', '<h1>Candidate ' + S.label + ' is done</h1><p>Next is Candidate ' + S.otherLabel + '.</p>',
+        [{ text: 'Continue', id: 'btn-continue', on: ev => { ev.currentTarget.disabled = true; log('to_other'); resolve(); } }]);
+    });
+  }
+  function startExtraHere() {
+    S.mode = 'extra'; record.mode = 'extra';
+    record.extra = { label: S.label };
+    log('extra_start');
+    setStage('extra', { sitIndex: 0, hist: [] });
+    enqueue(false);
+  }
+  async function flow(resuming) {
+    for (;;) {
+      const s = ST.stage;
+      if (s === 'intro') { await intro(); setStage('play', { sitIndex: 0, hist: [] }); resuming = false; continue; }
+      if (s === 'play') { await runPhase(CFG.situations, T.CAP_MS, 'main', resuming); resuming = false; setStage('questions', { qIndex: 0 }); continue; }
+      if (s === 'questions') { await askQuestions(ST.qIndex); setStage(S.pos === 1 ? 'between' : 'choice'); enqueue(false); continue; }
+      if (s === 'between') {
+        await between();
+        enqueue(false);
+        await savedOrRetry('to_other');
+        goOther('&pos=2&label=' + S.otherLabel);
+        return;
+      }
+      if (s === 'choice') {
+        const c = await finalChoice();
+        record.finalChoice = c; ST.choice = c;
+        log('final_choice', { choice: c });
+        if (c === 'stop') { setStage('finish'); continue; }
+        if (c === S.label) { startExtraHere(); continue; }
+        setStage('toextra'); enqueue(false); continue;
+      }
+      if (s === 'toextra') {
+        await savedOrRetry('to_extra');
+        goOther('&pos=1&label=' + S.otherLabel + '&mode=extra&choice=' + ST.choice);
+        return;
+      }
+      if (s === 'extra') {
+        await runPhase([CFG.extra], T.EXTRA_CAP_MS, 'extra', resuming); resuming = false;
+        record.extra.outcome = record.situations.length ? record.situations[record.situations.length - 1].outcome : null;
+        setStage('finish');
+        continue;
+      }
+      if (s === 'finish' || s === 'done') { await finish(); return; }
+      return;
+    }
+  }
+  function restore(saved) {
+    Object.assign(ST, saved.st);
+    const r = LS.get(KEY + ':rec');
+    if (r) { for (const k in record) delete record[k]; Object.assign(record, r); }
+    if (saved.clk) Object.assign(CLK, saved.clk);
+    S.mode = record.mode || S.mode;
+    const gap = Math.max(0, Date.now() - (saved.savedAt || Date.now()));
+    CLK.resumes += 1; CLK.resumeGapMs += gap;
+    return gap;
+  }
+  async function main() {
+    buildPlayScreen();
+    setInterval(tick, T.TICK_MS);
+    if (S.dev && P.get('consentpreview') === '1') {
+      sheet('consent', CFG.consentHtml, [{ text: 'Start', on: () => {} }, { text: 'I do not agree', quiet: true, on: () => {} }]);
+      return;
+    }
+    const saved = S.study ? LS.get(KEY) : null;
+    if (saved && saved.st && saved.st.sid) {
+      if (saved.st.stage === 'done') { consented = true; restore(saved); showDone(); if (mine(OB()).length) flush(); else forgetInvite(); return; }
+      const stop = inviteProblem(true);
+      if (stop) { inviteStop(stop); return; }
+      const tookOver = takeOver();
+      consented = true;
+      const gap = restore(saved);
+      if (tookOver) log('took_over');
+      flush();
+      if (ST.stage === 'finish') { await flow(false); return; }
+      if (ST.stage === 'agree') { await savedOrRetry('agreement'); setStage('intro'); await flow(false); return; }
+      log('reloaded', { gapMs: gap });
+      await resumeScreen();
+      log('resumed');
+      save(true);
+      await flow(true);
+      return;
+    }
+    if (S.study) {
+      const stop = inviteProblem(false);
+      if (stop) { inviteStop(stop); return; }
+    }
+    if (S.pos === 1 && S.study && S.mode === 'main') {
+      const ok = await consent();
+      if (!ok) { sheet('finish', '<h1>Thank you</h1><p>No study data has been collected. You can close this page.</p>', []); return; }
+    }
+    if (persisting()) {
+      if (S.pos === 1 && S.mode === 'main') startSession();
+      const tookOver = takeOver();
+      ST.sid = newSid(); record.sid = ST.sid; ST.w0 = Date.now();
+      if (tookOver) log('took_over');
+      CLK.hides = 0; CLK.shows = 0; CLK.hiddenMs = 0;
+      flush();
+    }
+    if (S.mode === 'extra') {
+      const ch = P.get('choice');
+      record.finalChoice = ch === 'A' || ch === 'B' ? ch : null;
+      record.extra = { label: S.label };
+      log('extra_start');
+      setStage('extra', { sitIndex: 0, hist: [] });
+      enqueue(false);
+      await flow(false);
+      return;
+    }
+    if (persisting() && S.pos === 1 && S.mode === 'main') {
+      setStage('agree'); enqueue(false);
+      await savedOrRetry('agreement');
+    }
+    setStage('intro');
+    await flow(false);
+  }
+  window.__q031 = {
+    jump: S.dev ? function (k, extra) {
+      finishAll(); endingPlaying = false; awaitingNext = false; $('btn-next').hidden = true;
+      sitList = extra ? [CFG.extra] : CFG.situations; show('play');
+      startSituation(extra ? 0 : k);
+    } : undefined,
+    record: () => JSON.parse(JSON.stringify(record)),
+    clock: () => { accrue(); return clockView(); },
+    stage: () => ST.stage,
+    outbox: () => OB(), receipts: () => RC(),
+    timing: T, params: S, busy: busy, finishAll: finishAll,
+    view: () => View, inputEnabled: () => inputEnabled, endingPlaying: () => endingPlaying, navigatedTo: null,
+    lastTick: () => lastTickAt, defunct: () => defunct,
+    session: () => { const g = getSession(); return g ? { gs: g.gs } : null; }, blocked: () => blocked
+  };
+  View.init({ log: log, tween: tween, ease: ease, T: T, finishAll: finishAll });
+  window.addEventListener('DOMContentLoaded', main);
+})();
+
+</script>
+</body>
+</html>

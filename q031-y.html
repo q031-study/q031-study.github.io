@@ -1,0 +1,1721 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<meta name="referrer" content="no-referrer">
+<title>Puzzle study</title>
+<script>
+(function () { var h = location.hash; if (h) { window.__q031h = h; try { history.replaceState(history.state, '', location.pathname + location.search); } catch (e) {} } })();
+</script>
+<style>
+
+:root {
+  --night-0: #13203a; --night-1: #1c2d4d; --night-2: #26395c;
+  --warm-0: #3a2a2a; --warm-1: #6b4330; --warm-2: #a8683c;
+  --snow: #eef3f8; --snow-dim: #b9c6d6; --frost: #cfe3f5; --ice: #8fc3ea;
+  --flame: #ff9a3c; --flame-hot: #ffcf6b; --window-warm: #ffd36b; --window-cold: #2b3e5e;
+  --wood: #8a5a3b; --wood-dark: #5e3b26; --stone: #6f7a8a; --stone-dark: #4f5866;
+  --ink: #f2f5f9; --ink-dim: #a9b6c8; --accent: #ffb25e;
+  --bar-h: 104px; --head-h: 58px;
+  --anim-move: 420ms; --anim-effect: 280ms;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { margin: 0; height: 100%; background: var(--night-0); color: var(--ink);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; overscroll-behavior: none; }
+body { display: flex; justify-content: center; }
+#app { width: 100%; max-width: 480px; height: 100%; display: flex; flex-direction: column; position: relative;
+  overflow: hidden; user-select: none; -webkit-user-select: none; touch-action: manipulation; }
+.screen { position: absolute; inset: 0; display: flex; flex-direction: column; padding: 0 16px; overflow-y: auto; }
+.screen[hidden] { display: none !important; }
+.sheet { justify-content: center; gap: 14px; padding: 24px 20px; }
+.sheet h1 { font-size: 26px; margin: 0; font-weight: 650; }
+.sheet p { font-size: 17px; line-height: 1.45; margin: 0; color: var(--ink); }
+.sheet .fine { font-size: 14px; color: var(--ink-dim); }
+.btn { min-height: 52px; min-width: 52px; border-radius: 14px; border: 0; font-size: 17px; font-weight: 600;
+  padding: 0 20px; background: var(--accent); color: #1d1408; cursor: pointer; }
+.btn.quiet { background: var(--night-2); color: var(--ink); }
+.btn:disabled { opacity: 0.45; }
+.choices { display: flex; flex-direction: column; gap: 12px; margin-top: 8px; }
+#play { padding: 0; }
+.head { height: var(--head-h); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; flex: 0 0 auto; }
+.head .label { font-size: 16px; font-weight: 650; letter-spacing: 0.02em; color: var(--ink); }
+.head .dots { display: flex; gap: 6px; }
+.head .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--night-2); }
+.head .dot.done { background: var(--ink-dim); }
+.head .dot.now { background: var(--accent); }
+.goals { display: flex; gap: 6px; align-items: center; height: 26px; }
+.scene-wrap { flex: 1 1 auto; position: relative; display: flex; align-items: center; justify-content: center; min-height: 0; }
+svg.scene { width: 100%; height: 100%; display: block; touch-action: none; }
+.bar { height: var(--bar-h); flex: 0 0 auto; display: flex; align-items: center; gap: 10px; padding: 0 16px 12px; }
+.bar .ctl { width: 56px; height: 56px; border-radius: 16px; border: 0; background: var(--night-2); display: flex;
+  align-items: center; justify-content: center; padding: 0; cursor: pointer; touch-action: none; }
+.bar .ctl svg { width: 30px; height: 30px; pointer-events: none; }
+.bar .spacer { flex: 1; }
+.bar .skip { height: 52px; border-radius: 14px; border: 0; background: var(--night-2); color: var(--ink); font-size: 15px;
+  font-weight: 600; padding: 0 14px; }
+.pulse { animation: pulse 1.2s ease-in-out infinite; }
+@keyframes pulse { 0%,100% { box-shadow: 0 0 0 0 rgba(255,178,94,0.0); } 50% { box-shadow: 0 0 0 6px rgba(255,178,94,0.45); } }
+.qwrap { padding: 20px 4px 28px; gap: 14px; display: flex; flex-direction: column; }
+.qwrap .qn { font-size: 13px; color: var(--ink-dim); }
+.qwrap .qtext { font-size: 19px; line-height: 1.4; font-weight: 600; }
+.qwrap textarea { width: 100%; min-height: 132px; border-radius: 12px; border: 1px solid var(--night-2); background: #0e1830;
+  color: var(--ink); font-size: 17px; padding: 12px; font-family: inherit; resize: vertical; }
+.qwrap .pic { width: 100%; border-radius: 12px; background: var(--night-1); }
+.qwrap .opts { display: flex; gap: 10px; }
+.qwrap .opts .btn { flex: 1; }
+.qwrap .opts .btn.sel { outline: 3px solid var(--ink); }
+.consent-check { display: flex; gap: 12px; align-items: flex-start; font-size: 16px; line-height: 1.4; }
+.consent-check input { width: 26px; height: 26px; flex: 0 0 auto; margin-top: 2px; }
+@media (prefers-reduced-motion: reduce) { :root { --anim-move: 1ms; --anim-effect: 1ms; } }
+
+</style>
+</head>
+<body>
+<div id="app">
+<section id="consent" class="screen" hidden></section>
+<section id="resume" class="screen" hidden></section>
+<section id="intro" class="screen" hidden></section>
+<section id="play" class="screen" hidden></section>
+<section id="question" class="screen" hidden></section>
+<section id="between" class="screen" hidden></section>
+<section id="choice" class="screen" hidden></section>
+<section id="saving" class="screen" hidden></section>
+<section id="finish" class="screen" hidden></section>
+</div>
+<script>
+window.Q031_CONFIG = {"build": "q031C2-5e430cd01ffc", "completion": "https://app.prolific.com/submissions/complete", "consentHtml": "<h1>Try two early puzzle prototypes</h1><p>You are invited to try two early browser puzzle prototypes, called Candidate A and Candidate B, and to answer a few short questions about each. The study takes about 40 minutes on an Android phone in Google Chrome. We are testing the prototypes, not you: you do not need to win or give positive feedback, and your payment does not depend on winning, on your answers, or on any choice you make. All answers are optional. You may stop at any time; contact us through Prolific about compensation or a technical problem.</p><p>With your agreement, the study records, under a random study code: which candidate you saw first; your taps and holds on the game screen (including holds you cancel by sliding away), their timing and what each did in the game; undos, restarts, skips and whether each challenge was finished; when the page was hidden or closed, and the type of any technical error on the page (not its details); your written answers; and your choice at the end. Nothing is recorded or sent before you agree. It does not record your screen, microphone, camera, location, device identifiers or anything else from your browser, and it does not ask for your name. Please do not include names or contact details in your answers. While you take part, this page keeps a working copy of your answers in this browser so that it can continue after a reload; it deletes that copy once your final answers are confirmed as saved (if you stop before the end, the copy stays in this browser until you clear its site data). The pages are hosted on GitHub Pages, which may receive normal connection information. Study data goes to the developer's private research storage.</p><p>Research copies and the private link between your study code and your Prolific account will be deleted no later than 90 days after the study's first participant session, including exports, backups and working copies under our control. Prolific and the hosting provider keep their own records under their policies. To ask for earlier deletion, message the researcher through Prolific or write to study-contact@example.org with your study code (shown at the end). If you do not agree, no study data is collected.</p><label class=\"consent-check\"><input type=\"checkbox\" id=\"agree\"> <span>I am 18 or older, have read the information above, and agree to this study.</span></label>", "consentVersion": "Q031-CONSENT-5", "decisionIds": ["H3", "H4", "HX", "H5"], "extra": {"chimneys": ["attic"], "id": "H5", "night": 12, "passages": [{"a": "hearth", "b": "parlour", "open": false}, {"a": "parlour", "b": "loft", "open": false}, {"a": "loft", "b": "attic", "open": false}], "rooms": [{"col": 0, "id": "hearth", "kind": "hearth", "row": 0}, {"col": 1, "id": "parlour", "kind": "family", "row": 0}, {"col": 1, "id": "loft", "kind": "family", "row": 1}, {"col": 1, "id": "attic", "kind": "family", "row": 2}], "tray": ["hay", "log", "log"], "windows": ["attic"]}, "page": "y", "platform": "Prolific", "receiver": {"readback": "jsonp", "url": "https://script.google.com/macros/s/AKfycbz47k90DNdS4tA3YP8h5OyMj8jGKABm3S9cYcp8Q2ajVk24JUcb_uyFsIvKI22xTCD9/exec"}, "situations": [{"chimneys": [], "id": "H1", "night": 12, "passages": [{"a": "hearth", "b": "loft", "open": false}], "rooms": [{"col": 0, "id": "hearth", "kind": "hearth", "row": 0}, {"col": 0, "id": "loft", "kind": "family", "row": 1}], "tray": ["log"], "windows": []}, {"chimneys": ["floor2"], "id": "H2", "night": 12, "passages": [{"a": "hearth", "b": "floor2", "open": false}, {"a": "floor2", "b": "attic", "open": false}], "rooms": [{"col": 0, "id": "hearth", "kind": "hearth", "row": 0}, {"col": 0, "id": "floor2", "kind": "family", "row": 1}, {"col": 0, "id": "attic", "kind": "family", "row": 2}], "tray": ["log", "log"], "windows": []}, {"chimneys": [], "id": "H3", "night": 12, "passages": [{"a": "hearth", "b": "parlour", "open": false}, {"a": "hearth", "b": "loft", "open": true}], "rooms": [{"col": 0, "id": "hearth", "kind": "hearth", "row": 0}, {"col": 1, "id": "parlour", "kind": "family", "row": 0}, {"col": 0, "id": "loft", "kind": "family", "row": 1}], "tray": ["hay", "log"], "windows": []}, {"chimneys": [], "id": "H4", "night": 12, "passages": [{"a": "hearth", "b": "landing", "open": true}, {"a": "landing", "b": "garret", "open": false}], "rooms": [{"col": 0, "id": "hearth", "kind": "hearth", "row": 0}, {"col": 0, "id": "landing", "kind": "room", "row": 1}, {"col": 0, "id": "garret", "kind": "family", "row": 2}], "tray": ["hay", "coal"], "windows": ["landing", "garret"]}, {"chimneys": ["study"], "id": "HX", "night": 12, "passages": [{"a": "hearth", "b": "parlour", "open": false}, {"a": "hearth", "b": "loft", "open": false}, {"a": "parlour", "b": "study", "open": false}, {"a": "loft", "b": "study", "open": false}], "rooms": [{"col": 0, "id": "hearth", "kind": "hearth", "row": 0}, {"col": 1, "id": "parlour", "kind": "family", "row": 0}, {"col": 0, "id": "loft", "kind": "family", "row": 1}, {"col": 1, "id": "study", "kind": "family", "row": 1}], "tray": ["hay", "hay", "log"], "windows": ["parlour"]}], "testRows": false};
+</script>
+<script>
+
+(function (root) {
+  'use strict';
+  const K = [
+    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
+    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3, 0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
+    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
+    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
+    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13, 0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
+    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
+    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
+    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208, 0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2];
+  function utf8(str) {
+    const out = [];
+    for (let i = 0; i < str.length; i++) {
+      let c = str.charCodeAt(i);
+      if (c >= 0xd800 && c <= 0xdbff && i + 1 < str.length) {
+        const d = str.charCodeAt(i + 1);
+        if (d >= 0xdc00 && d <= 0xdfff) { c = 0x10000 + ((c - 0xd800) << 10) + (d - 0xdc00); i++; }
+        else c = 0xfffd;
+      } else if (c >= 0xd800 && c <= 0xdfff) c = 0xfffd;
+      if (c < 0x80) out.push(c);
+      else if (c < 0x800) out.push(0xc0 | (c >> 6), 0x80 | (c & 63));
+      else if (c < 0x10000) out.push(0xe0 | (c >> 12), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+      else out.push(0xf0 | (c >> 18), 0x80 | ((c >> 12) & 63), 0x80 | ((c >> 6) & 63), 0x80 | (c & 63));
+    }
+    return out;
+  }
+  function sha256hex(str) {
+    const bytes = utf8(String(str));
+    const l = bytes.length, nb = Math.ceil((l + 9) / 64), buf = new Array(nb * 64).fill(0);
+    for (let i = 0; i < l; i++) buf[i] = bytes[i];
+    buf[l] = 0x80;
+    const hi = Math.floor(l / 0x20000000), lo = (l * 8) >>> 0;
+    for (let i = 0; i < 4; i++) { buf[buf.length - 8 + i] = (hi >>> (24 - 8 * i)) & 255; buf[buf.length - 4 + i] = (lo >>> (24 - 8 * i)) & 255; }
+    const H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+    const W = new Array(64);
+    const rotr = (x, n) => (x >>> n) | (x << (32 - n));
+    for (let b = 0; b < nb; b++) {
+      const o = b * 64;
+      for (let i = 0; i < 16; i++) W[i] = (buf[o + 4 * i] << 24) | (buf[o + 4 * i + 1] << 16) | (buf[o + 4 * i + 2] << 8) | buf[o + 4 * i + 3];
+      for (let i = 16; i < 64; i++) {
+        const s0 = rotr(W[i - 15], 7) ^ rotr(W[i - 15], 18) ^ (W[i - 15] >>> 3);
+        const s1 = rotr(W[i - 2], 17) ^ rotr(W[i - 2], 19) ^ (W[i - 2] >>> 10);
+        W[i] = (W[i - 16] + s0 + W[i - 7] + s1) | 0;
+      }
+      let a = H[0], b2 = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+      for (let i = 0; i < 64; i++) {
+        const S1 = rotr(e, 6) ^ rotr(e, 11) ^ rotr(e, 25), ch = (e & f) ^ (~e & g);
+        const t1 = (h + S1 + ch + K[i] + W[i]) | 0;
+        const S0 = rotr(a, 2) ^ rotr(a, 13) ^ rotr(a, 22), maj = (a & b2) ^ (a & c) ^ (b2 & c);
+        const t2 = (S0 + maj) | 0;
+        h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b2; b2 = a; a = (t1 + t2) | 0;
+      }
+      H[0] = (H[0] + a) | 0; H[1] = (H[1] + b2) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0;
+      H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+    }
+    return H.map(x => (x >>> 0).toString(16).padStart(8, '0')).join('');
+  }
+  root.Q031_SHA256 = sha256hex;
+  if (typeof module !== 'undefined' && module.exports) module.exports = sha256hex;
+})(typeof globalThis !== 'undefined' ? globalThis : this);
+
+</script>
+<script>
+
+const EngineY = (function () {
+  'use strict';
+  const HAY = 0, LOG = 1, COAL = 2;
+  const FUEL_NAME = ['hay', 'log', 'coal'];
+  const FUEL_CURVE = [[10], [4, 4, 4, 4], [2, 2, 2, 2, 2, 2, 2, 2]];
+  const MAXHEAT = 12, UP_NUM = 2, UP_DEN = 3, SIDE_DEN = 4, COOL = 1, WINLEAK = 1, CHLEAK = 2, STOVE = 2;
+  const WARM_T = 5, WARM_HOURS = 2, NIGHT = 12;
+  function Building(data) {
+    const B = { data: data, id: data.id };
+    B.names = data.rooms.map(r => r.id);
+    B.ix = {};
+    B.names.forEach((n, i) => { B.ix[n] = i; });
+    B.pos = data.rooms.map(r => [r.col, r.row]);
+    B.kind = data.rooms.map(r => r.kind);
+    B.n = B.names.length;
+    B.hearth = B.kind.indexOf('hearth');
+    B.families = [];
+    for (let i = 0; i < B.n; i++) if (B.kind[i] === 'family') B.families.push(i);
+    const P = {};
+    data.passages.forEach(p => {
+      const a = B.ix[p.a], b = B.ix[p.b];
+      const lo = Math.min(a, b), hi = Math.max(a, b);
+      P[lo + ':' + hi] = { a: lo, b: hi, init: !!p.open };
+    });
+    B.pass_list = Object.values(P).sort((x, y) => (x.a - y.a) || (x.b - y.b)).map(p => {
+      const vert = B.pos[p.a][0] === B.pos[p.b][0];
+      return { a: p.a, b: p.b, init: p.init, vert: vert };
+    });
+    B.windows = (data.windows || []).map(w => B.ix[w]).sort((x, y) => x - y);
+    B.chimneys = (data.chimneys || []).map(c => B.ix[c]).sort((x, y) => x - y);
+    B.np = B.pass_list.length; B.nw = B.windows.length; B.nc = B.chimneys.length;
+    B.ntog = B.np + B.nw + B.nc;
+    B.init_tog = 0;
+    B.pass_list.forEach((p, i) => { if (p.init) B.init_tog |= (1 << i); });
+    for (let j = 0; j < B.nc; j++) B.init_tog |= (1 << (B.np + B.nw + j));
+    B.up = new Array(B.n).fill(null);
+    B.sides = [];
+    for (let i = 0; i < B.n; i++) B.sides.push([]);
+    B.pass_list.forEach((p, i) => {
+      if (p.vert) {
+        const lo = B.pos[p.a][1] < B.pos[p.b][1] ? p.a : p.b, hi = lo === p.a ? p.b : p.a;
+        B.up[lo] = [i, hi];
+      } else { B.sides[p.a].push([i, p.b]); B.sides[p.b].push([i, p.a]); }
+    });
+    B.win_bit = {}; B.windows.forEach((r, k) => { B.win_bit[r] = 1 << (B.np + k); });
+    B.ch_bit = {}; B.chimneys.forEach((r, k) => { B.ch_bit[r] = 1 << (B.np + B.nw + k); });
+    B.tray0 = data.tray.map(t => FUEL_NAME.indexOf(t)).sort((x, y) => x - y);
+    B.night = data.night || NIGHT;
+    return B;
+  }
+  function initial(B) {
+    return { heat: new Array(B.n).fill(0), tog: B.init_tog, wm: 0, cnt: new Array(B.n).fill(0),
+             queue: [], bk: -1, bi: 0, tray: B.tray0.slice() };
+  }
+  function actions(B, st) {
+    const acts = [['w', 0]];
+    for (let i = 0; i < B.ntog; i++) acts.push(['t', i]);
+    const kinds = Array.from(new Set(st.tray)).sort((x, y) => x - y);
+    kinds.forEach(k => acts.push(['f', k]));
+    return acts;
+  }
+  function step(B, st, act) {
+    const heat = st.heat.slice(), cnt = st.cnt.slice(), queue = st.queue.slice(), tray = st.tray.slice();
+    let tog = st.tog, wm = st.wm, bk = st.bk, bi = st.bi;
+    const ev = { fuelAdded: 0, lit: null, overflow: [], flows: [], leaks: [], warmedNow: [], streakNow: [] };
+    if (act[0] === 't') tog ^= (1 << act[1]);
+    else if (act[0] === 'f') {
+      tray.splice(tray.indexOf(act[1]), 1);
+      if (bk < 0) { bk = act[1]; bi = 0; ev.lit = act[1]; } else queue.push(act[1]);
+    }
+    if (bk >= 0) {
+      const add = FUEL_CURVE[bk][bi];
+      heat[B.hearth] += add; ev.fuelAdded = add; bi += 1;
+      if (bi >= FUEL_CURVE[bk].length) {
+        if (queue.length) { bk = queue.shift(); bi = 0; } else { bk = -1; bi = 0; }
+      }
+    }
+    for (let r = 0; r < B.n; r++) {
+      if ((wm >> r) & 1) heat[r] += STOVE;
+      if (heat[r] > MAXHEAT) { ev.overflow.push([r, heat[r] - MAXHEAT]); heat[r] = MAXHEAT; }
+    }
+    const delta = new Array(B.n).fill(0);
+    for (let r = 0; r < B.n; r++) {
+      const h = heat[r];
+      if (h <= 0) continue;
+      const u = B.up[r];
+      if (u !== null && ((tog >> u[0]) & 1)) {
+        const m = Math.floor((h * UP_NUM) / UP_DEN);
+        delta[r] -= m; delta[u[1]] += m;
+        if (m > 0) ev.flows.push([r, u[1], m, u[0]]);
+      } else {
+        for (const [i, o] of B.sides[r]) {
+          if ((tog >> i) & 1) {
+            const m = Math.floor(h / SIDE_DEN);
+            delta[r] -= m; delta[o] += m;
+            if (m > 0) ev.flows.push([r, o, m, i]);
+          }
+        }
+      }
+    }
+    for (let r = 0; r < B.n; r++) {
+      let h = heat[r] + delta[r];
+      if (B.win_bit[r] !== undefined && !(tog & B.win_bit[r])) { h -= WINLEAK; ev.leaks.push(['window', r]); }
+      if (B.ch_bit[r] !== undefined && (tog & B.ch_bit[r])) { h -= CHLEAK; ev.leaks.push(['damper', r]); }
+      h -= COOL;
+      if (h < 0) h = 0;
+      if (h > MAXHEAT) { ev.overflow.push([r, h - MAXHEAT]); h = MAXHEAT; }
+      heat[r] = h;
+    }
+    for (const r of B.families) {
+      if (!((wm >> r) & 1)) {
+        if (heat[r] >= WARM_T) {
+          cnt[r] += 1;
+          if (cnt[r] >= WARM_HOURS) { wm |= (1 << r); ev.warmedNow.push(r); } else ev.streakNow.push(r);
+        } else cnt[r] = 0;
+      }
+    }
+    tray.sort((x, y) => x - y);
+    return { state: { heat: heat, tog: tog, wm: wm, cnt: cnt, queue: queue, bk: bk, bi: bi, tray: tray }, ev: ev };
+  }
+  function won(B, st) { return B.families.every(r => (st.wm >> r) & 1); }
+  function actName(B, a) {
+    if (a[0] === 'w') return 'wait';
+    if (a[0] === 'f') return 'feed ' + FUEL_NAME[a[1]];
+    const i = a[1];
+    if (i < B.np) { const p = B.pass_list[i]; return 'toggle ' + (p.vert ? 'trapdoor ' : 'door ') + B.names[p.a] + '-' + B.names[p.b]; }
+    if (i < B.np + B.nw) return 'toggle shutter ' + B.names[B.windows[i - B.np]];
+    return 'toggle damper ' + B.names[B.chimneys[i - B.np - B.nw]];
+  }
+  function key(st) {
+    return '(' + st.heat.join(',') + ')|' + st.tog + '|' + st.wm + '|(' + st.cnt.join(',') + ')|(' + st.queue.join(',') + ')|' +
+      st.bk + '|' + st.bi + '|(' + st.tray.join(',') + ')';
+  }
+  return { HAY, LOG, COAL, FUEL_NAME, FUEL_CURVE, MAXHEAT, NIGHT, WARM_T, Building, initial, actions, step, won, actName, key };
+})();
+if (typeof module !== 'undefined') module.exports = EngineY;
+
+</script>
+<script>
+
+window.CandidateView = (function () {
+  'use strict';
+  const E = EngineY;
+  const NS = 'http://www.w3.org/2000/svg';
+  let api = null, B = null, st = null, hour = 0, hist = [], svg = null, layer = {}, sitData = null;
+  let rooms = [], passEls = [], winEls = {}, damperEls = {}, fire = null, dots = [], trayBox = null, barEls = [];
+  let previewOn = false;
+  function el(tag, attrs, parent) {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  function geom(data) {
+    const cols = Math.max.apply(null, data.rooms.map(r => r.col)) + 1;
+    const rows = Math.max.apply(null, data.rooms.map(r => r.row)) + 1;
+    const W = cols === 1 ? 58 : 80, x0 = 50 - W / 2;
+    const FH = rows <= 2 ? 34 : rows === 3 ? 29 : 23;
+    const bottom = 118;
+    return { cols: cols, rows: rows, W: W, x0: x0, FH: FH, bottom: bottom, top: bottom - rows * FH, cw: W / cols };
+  }
+  function roomRect(g, c, r) { return { x: g.x0 + c * g.cw, y: g.bottom - (r + 1) * g.FH, w: g.cw, h: g.FH }; }
+  function band(h) { return h <= 0 ? 0 : h <= 2 ? 1 : h <= 4 ? 2 : h <= 8 ? 3 : 4; }
+  function defs(root) {
+    const d = el('defs', {}, root);
+    const g = el('linearGradient', { id: 'skyy', x1: 0, y1: 0, x2: 0, y2: 1 }, d);
+    el('stop', { offset: '0', 'stop-color': '#13203a' }, g); el('stop', { offset: '1', 'stop-color': '#2a3f63' }, g);
+    const w = el('linearGradient', { id: 'warmy', x1: 0, y1: 0, x2: 0, y2: 1 }, d);
+    el('stop', { offset: '0', 'stop-color': '#3a2a3a' }, w); el('stop', { offset: '1', 'stop-color': '#a8683c' }, w);
+    const f = el('radialGradient', { id: 'flamey', cx: '50%', cy: '70%', r: '60%' }, d);
+    el('stop', { offset: '0', 'stop-color': '#ffe08a' }, f); el('stop', { offset: '1', 'stop-color': '#ff7a1c' }, f);
+    const gl = el('radialGradient', { id: 'glowy' }, d);
+    el('stop', { offset: '0', 'stop-color': '#ffd36b', 'stop-opacity': '0.85' }, gl); el('stop', { offset: '1', 'stop-color': '#ffd36b', 'stop-opacity': '0' }, gl);
+  }
+  function backdrop(root) {
+    el('rect', { x: -10, y: -10, width: 120, height: 150, fill: 'url(#skyy)' }, root);
+    layer.dawn = el('rect', { x: -10, y: -10, width: 120, height: 150, fill: '#8fa6c4', opacity: 0 }, root);
+    layer.warm = el('rect', { x: -10, y: -10, width: 120, height: 150, fill: 'url(#warmy)', opacity: 0 }, root);
+    const snow = el('g', { fill: '#eef3f8', opacity: 0.55 }, root);
+    for (let i = 0; i < 22; i++) {
+      const x = (i * 37.3) % 100, y = (i * 23.9) % 128;
+      el('circle', { cx: x.toFixed(1), cy: y.toFixed(1), r: (0.35 + (i % 3) * 0.2).toFixed(2) }, snow);
+    }
+    el('path', { d: 'M-10 126 Q 25 120 50 125 T 110 124 V 140 H -10 Z', fill: '#dfe8f2', opacity: 0.9 }, root);
+  }
+  function hourDots(root) {
+    dots = [];
+    const g = el('g', {}, root);
+    for (let i = 0; i < 12; i++) dots.push(el('circle', { cx: (17 + i * 6).toFixed(1), cy: 4.5, r: 1.6, 'stroke-width': 0.5 }, g));
+  }
+  function setDots(h) {
+    dots.forEach((d, i) => { d.setAttribute('fill', i < h ? '#a9b6c8' : '#13203a'); d.setAttribute('stroke', '#a9b6c8'); });
+  }
+  function drawFamilyWindow(parent, cx, cy) {
+    const g = el('g', {}, parent);
+    const glow = el('circle', { cx: cx, cy: cy, r: 9, fill: 'url(#glowy)', opacity: 0 }, g);
+    const glass = el('rect', { x: cx - 5, y: cy - 4.5, width: 10, height: 9, fill: '#2b3e5e', stroke: '#1a2438', 'stroke-width': 0.5 }, g);
+    const half = el('rect', { x: cx - 5, y: cy, width: 10, height: 4.5, fill: '#ffd36b', opacity: 0 }, g);
+    const frost = el('rect', { x: cx - 5, y: cy - 4.5, width: 10, height: 9, fill: '#cfe3f5', opacity: 0.78 }, g);
+    const fam = el('g', { fill: '#16203a' }, g);
+    el('circle', { cx: cx - 1.4, cy: cy + 0.3, r: 1.1 }, fam); el('circle', { cx: cx + 1.6, cy: cy + 0.7, r: 0.95 }, fam);
+    el('path', { d: 'M' + (cx - 3) + ' ' + (cy + 4.5) + ' Q' + (cx - 1.4) + ' ' + (cy + 2.2) + ' ' + cx + ' ' + (cy + 4.5) + ' Q' + (cx + 1.6) + ' ' + (cy + 2.8) + ' ' + (cx + 3) + ' ' + (cy + 4.5) + ' Z' }, fam);
+    el('path', { d: 'M' + cx + ' ' + (cy - 4.5) + ' V' + (cy + 4.5) + ' M' + (cx - 5) + ' ' + cy + ' H' + (cx + 5), stroke: '#1a2438', 'stroke-width': 0.6 }, g);
+    return { g: g, glow: glow, glass: glass, half: half, fam: fam, frost: frost };
+  }
+  function buildScene(root, data) {
+    defs(root); backdrop(root); hourDots(root);
+    const g = geom(data); layer.g = g;
+    const colTop = {};
+    data.rooms.forEach(r => { colTop[r.col] = Math.max(colTop[r.col] === undefined ? -1 : colTop[r.col], r.row); });
+    layer.colTop = c => g.bottom - (colTop[c] + 1) * g.FH;
+    layer.snowcaps = [];
+    const tops = Object.keys(colTop).map(Number);
+    const same = tops.every(c => colTop[c] === colTop[tops[0]]);
+    const roofs = same ? [[g.x0, g.W, layer.colTop(tops[0])]] : tops.map(c => [g.x0 + c * g.cw, g.cw, layer.colTop(c)]);
+    roofs.forEach(([rx, rw, ry]) => {
+      const peak = Math.min(15, rw * 0.32);
+      el('path', { d: 'M' + (rx - 4) + ' ' + ry + ' L' + (rx + rw / 2) + ' ' + (ry - peak) + ' L' + (rx + rw + 4) + ' ' + ry + ' Z', fill: '#3a4660' }, root);
+      layer.snowcaps.push(el('path', { d: 'M' + (rx - 3) + ' ' + (ry - 0.6) + ' L' + (rx + rw / 2) + ' ' + (ry - peak) + ' L' + (rx + rw + 3) + ' ' + (ry - 0.6) + ' L' + (rx + rw - 2) + ' ' + (ry - 0.6) + ' L' + (rx + rw / 2) + ' ' + (ry - peak + 3.4) + ' L' + (rx + 2) + ' ' + (ry - 0.6) + ' Z', fill: '#eef3f8' }, root));
+    });
+    data.rooms.forEach(r => {
+      const rr = roomRect(g, r.col, r.row);
+      el('rect', { x: rr.x - 1.4, y: rr.y - 1.4, width: rr.w + 2.8, height: rr.h + 2.8, fill: '#4b3a33' }, root);
+    });
+    layer.rooms = el('g', {}, root);
+    rooms = data.rooms.map((r, i) => {
+      const rr = roomRect(g, r.col, r.row);
+      const grp = el('g', {}, layer.rooms);
+      el('rect', { x: rr.x + 0.7, y: rr.y + 0.7, width: rr.w - 1.4, height: rr.h - 1.4, fill: r.kind === 'hearth' ? '#3b3046' : '#3d3550' }, grp);
+      el('path', { d: 'M' + (rr.x + 0.7) + ' ' + (rr.y + rr.h - 0.7) + ' H' + (rr.x + rr.w - 0.7), stroke: '#5e3b26', 'stroke-width': 1.2 }, grp);
+      const haze = el('rect', { x: rr.x + 0.7, y: rr.y + 0.7, width: rr.w - 1.4, height: rr.h - 1.4, fill: '#ff9a3c', opacity: 0 }, grp);
+      const rec = { rr: rr, g: grp, haze: haze, kind: r.kind };
+      const hasFlue = (data.chimneys || []).indexOf(r.id) >= 0;
+      if (r.kind === 'family') rec.win = drawFamilyWindow(grp, rr.x + rr.w * (hasFlue ? 0.38 : 0.5), rr.y + rr.h * 0.42);
+      return rec;
+    });
+    const hr = rooms[B.hearth].rr;
+    const fx = hr.x + hr.w * 0.5, fy = hr.y + hr.h - 1.5;
+    const fg = el('g', {}, root);
+    el('path', { d: 'M' + (fx - 7) + ' ' + fy + ' V' + (fy - 9) + ' H' + (fx + 7) + ' V' + fy + ' Z', fill: '#6f7a8a' }, fg);
+    el('path', { d: 'M' + (fx - 4.5) + ' ' + fy + ' V' + (fy - 5.5) + ' Q' + fx + ' ' + (fy - 8.5) + ' ' + (fx + 4.5) + ' ' + (fy - 5.5) + ' V' + fy + ' Z', fill: '#231a14' }, fg);
+    el('ellipse', { cx: fx, cy: fy - 0.9, rx: 3.4, ry: 0.9, fill: '#4a2a20' }, fg);
+    const flame = el('path', { d: 'M0 -7 C 1.6 -5.2 2.2 -3.8 1.6 -2.2 C 1.2 -1 -1.2 -1 -1.6 -2.2 C -2.2 -3.8 -0.8 -4.8 0 -7 Z', fill: 'url(#flamey)' }, fg);
+    const fglow = el('circle', { cx: fx, cy: fy - 3.5, r: 7, fill: 'url(#glowy)', opacity: 0 }, fg);
+    const hrs = el('g', {}, fg);
+    const queue = el('g', {}, fg);
+    fire = { g: fg, flame: flame, glow: fglow, hrs: hrs, queue: queue, x: fx, y: fy };
+    layer.pass = el('g', {}, root);
+    passEls = B.pass_list.map((p, i) => {
+      const a = data.rooms[p.a], b = data.rooms[p.b];
+      const grp = el('g', {}, layer.pass);
+      let rec;
+      if (p.vert) {
+        const lo = a.row < b.row ? a : b;
+        const rr = roomRect(g, lo.col, lo.row);
+        const cx = g.cols === 1 ? rr.x + rr.w * 0.5 - 10 : (lo.col === 0 ? rr.x + rr.w * 0.45 : rr.x + rr.w * 0.55), cy = rr.y;
+        const hit = el('rect', { x: cx - 10, y: cy - 6.5, width: 20, height: 13, fill: 'transparent' }, grp);
+        const gap = el('rect', { x: cx - 6, y: cy - 1.2, width: 12, height: 2.4, fill: '#120d0a' }, grp);
+        const plank = el('rect', { x: cx - 6, y: cy - 1.3, width: 12, height: 2.6, rx: 0.6, fill: '#a0703f', stroke: '#5e3b26', 'stroke-width': 0.5 }, grp);
+        rec = { g: grp, hit: hit, gap: gap, plank: plank, vert: true, cx: cx, cy: cy };
+      } else {
+        const left = a.col < b.col ? a : b;
+        const rr = roomRect(g, left.col, left.row);
+        const cx = rr.x + rr.w, cy = rr.y + rr.h - 7.5;
+        const hit = el('rect', { x: cx - 6.5, y: cy - 9, width: 13, height: 18, fill: 'transparent' }, grp);
+        const gap = el('rect', { x: cx - 1.8, y: cy - 6.5, width: 3.6, height: 13, fill: '#120d0a' }, grp);
+        const plank = el('rect', { x: cx - 1.8, y: cy - 6.5, width: 3.6, height: 13, rx: 0.5, fill: '#a0703f', stroke: '#5e3b26', 'stroke-width': 0.5 }, grp);
+        rec = { g: grp, hit: hit, gap: gap, plank: plank, vert: false, cx: cx, cy: cy };
+      }
+      rec.idx = i;
+      return rec;
+    });
+    winEls = {};
+    B.windows.forEach((r, k) => {
+      const room = data.rooms[r];
+      const rr = roomRect(g, room.col, room.row);
+      const left = g.cols === 1 ? true : room.col === 0;
+      const cx = left ? g.x0 - 0.7 : g.x0 + g.W + 0.7, cy = rr.y + rr.h * 0.72;
+      const grp = el('g', {}, root);
+      const hit = el('rect', { x: cx - 7, y: cy - 8, width: 14, height: 16, fill: 'transparent' }, grp);
+      el('rect', { x: cx - 2.6, y: cy - 4.5, width: 5.2, height: 9, fill: '#2b3e5e', stroke: '#1a2438', 'stroke-width': 0.5 }, grp);
+      const shim = el('path', { d: 'M' + (cx + (left ? -4 : 4)) + ' ' + (cy - 3) + ' q' + (left ? -1.5 : 1.5) + ' 1.5 0 3 q' + (left ? 1.5 : -1.5) + ' 1.5 0 3', stroke: '#cfe3f5', 'stroke-width': 0.6, fill: 'none', opacity: 0 }, grp);
+      const shL = el('rect', { x: cx - 2.6, y: cy - 4.5, width: 2.6, height: 9, fill: '#8a5a3b', stroke: '#5e3b26', 'stroke-width': 0.4 }, grp);
+      const shR = el('rect', { x: cx, y: cy - 4.5, width: 2.6, height: 9, fill: '#8a5a3b', stroke: '#5e3b26', 'stroke-width': 0.4 }, grp);
+      winEls[r] = { g: grp, hit: hit, shL: shL, shR: shR, shim: shim, cx: cx, cy: cy, bit: k };
+    });
+    damperEls = {};
+    B.chimneys.forEach((r, k) => {
+      const room = data.rooms[r];
+      const rr = roomRect(g, room.col, room.row);
+      const right = room.col === g.cols - 1;
+      const sx = right ? rr.x + rr.w - 10 : rr.x + 5;
+      const grp = el('g', {}, root);
+      const hit = el('rect', { x: sx - 4.5, y: rr.y + 0.8, width: 14, height: 11.5, fill: 'transparent' }, grp);
+      const ctop = layer.colTop(room.col) - 13;
+      el('rect', { x: sx, y: ctop, width: 5, height: rr.y + 2 - ctop, fill: '#6f7a8a', opacity: 0.85, 'pointer-events': 'none' }, grp);
+      const plate = el('rect', { x: sx - 0.6, y: rr.y + 5, width: 6.2, height: 1.6, fill: '#3a3f4a', stroke: '#d7dce4', 'stroke-width': 0.35 }, grp);
+      const plume = el('g', { opacity: 0 }, grp);
+      for (let i = 0; i < 3; i++) el('circle', { cx: sx + 2.5 + i * 1.6, cy: ctop - 2 - i * 3, r: 1.6 + i * 0.6, fill: '#c8cfd8', opacity: 0.7 - i * 0.18 }, plume);
+      damperEls[r] = { g: grp, hit: hit, plate: plate, plume: plume, sx: sx, y: rr.y + 5.8, bit: k };
+    });
+    layer.fx = el('g', { 'pointer-events': 'none' }, root);
+  }
+  function drawState(s, h, ghost) {
+    rooms.forEach((rm, i) => {
+      rm.haze.setAttribute('opacity', ((s.heat[i] / 12) * 0.62).toFixed(3));
+      if (rm.win) {
+        const warmed = ((s.wm >> i) & 1) === 1;
+        const b = band(s.heat[i]);
+        rm.win.frost.setAttribute('opacity', warmed ? 0 : [0.78, 0.55, 0.3, 0, 0][b]);
+        rm.win.glass.setAttribute('fill', warmed ? '#ffd36b' : ['#2b3e5e', '#2b3e5e', '#33476a', '#7a5a3a', '#a0703f'][b]);
+        rm.win.half.setAttribute('opacity', !warmed && s.cnt[i] >= 1 ? 1 : 0);
+        rm.win.glow.setAttribute('opacity', warmed ? 0.9 : 0);
+        rm.win.fam.setAttribute('fill', warmed ? '#9a5a2a' : '#16203a');
+      }
+    });
+    passEls.forEach((p, i) => {
+      const open = ((s.tog >> i) & 1) === 1;
+      if (p.vert) {
+        p.plank.setAttribute('transform', open ? 'rotate(-62 ' + (p.cx - 6) + ' ' + p.cy + ')' : '');
+        p.gap.setAttribute('opacity', open ? 1 : 0);
+      } else {
+        p.plank.setAttribute('transform', open ? 'translate(' + (p.cx - 1.8) + ' 0) scale(0.28 1) translate(' + (-(p.cx - 1.8)) + ' 0)' : '');
+        p.gap.setAttribute('opacity', open ? 1 : 0);
+      }
+    });
+    Object.keys(winEls).forEach(r => {
+      const w = winEls[r];
+      const shut = (s.tog & (1 << (B.np + w.bit))) !== 0;
+      w.shL.setAttribute('transform', shut ? '' : 'translate(-2.4 0) scale(0.25 1) translate(' + (w.cx - 2.6) + ' 0) translate(' + (-(w.cx - 2.6)) + ' 0)');
+      w.shL.setAttribute('x', shut ? w.cx - 2.6 : w.cx - 5.2);
+      w.shR.setAttribute('x', shut ? w.cx : w.cx + 2.6);
+      w.shL.removeAttribute('transform');
+      w.shL.setAttribute('width', shut ? 2.6 : 2.6); w.shR.setAttribute('width', 2.6);
+      w.shim.setAttribute('opacity', !shut && s.heat[r] > 0 ? 0.9 : 0);
+    });
+    Object.keys(damperEls).forEach(r => {
+      const d = damperEls[r];
+      const open = (s.tog & (1 << (B.np + B.nw + d.bit))) !== 0;
+      d.plate.setAttribute('transform', open ? 'rotate(80 ' + (d.sx + 2.5) + ' ' + d.y + ')' : '');
+      d.plume.setAttribute('opacity', open && s.heat[r] > 0 ? 1 : 0);
+    });
+    const burning = s.bk >= 0;
+    const big = burning ? (s.bk === 0 ? 1.9 : s.bk === 1 ? 1.45 : 1.15) : 0.55;
+    fire.flame.setAttribute('transform', 'translate(' + fire.x + ' ' + (fire.y - 0.8) + ') scale(' + big + ')');
+    fire.flame.setAttribute('opacity', burning ? 1 : 0);
+    fire.glow.setAttribute('opacity', burning ? 0.75 : 0);
+    fire.hrs.innerHTML = '';
+    if (burning) {
+      const left = E.FUEL_CURVE[s.bk].length - s.bi;
+      for (let i = 0; i < left; i++) el('circle', { cx: fire.x - 5 + i * 1.5, cy: fire.y - 11, r: 0.55, fill: '#ff9a3c' }, fire.hrs);
+    }
+    fire.queue.innerHTML = '';
+    s.queue.forEach((k, i) => fuelIcon(fire.queue, k, fire.x + 9 + i * 4, fire.y - 2.5, 0.38));
+    setDots(h);
+    if (layer.dawn) layer.dawn.setAttribute('opacity', (!ghost && h >= B.night && !E.won(B, s)) ? 0.35 : 0);
+  }
+  function fuelIcon(parent, k, x, y, sc) {
+    const g = el('g', { transform: 'translate(' + x + ' ' + y + ') scale(' + sc + ')' }, parent);
+    if (k === 0) { el('ellipse', { cx: 0, cy: 0, rx: 5.5, ry: 3.6, fill: '#d9b765' }, g); el('path', { d: 'M-4 -1 H4 M-4.6 1 H4.6', stroke: '#9a7a3a', 'stroke-width': 0.6 }, g); el('path', { d: 'M-1 -3.6 V3.6 M1 -3.6 V3.6', stroke: '#8a6a2a', 'stroke-width': 0.8 }, g); }
+    else if (k === 1) { el('rect', { x: -6, y: -2.6, width: 12, height: 5.2, rx: 2.6, fill: '#8a5a3b' }, g); el('ellipse', { cx: 6, cy: 0, rx: 1.6, ry: 2.6, fill: '#c9a46a' }, g); el('ellipse', { cx: 6, cy: 0, rx: 0.7, ry: 1.2, fill: '#8a6a3b' }, g); }
+    else { el('path', { d: 'M-4.5 2.6 L-3 -2.4 L1 -3.6 L4.6 -0.6 L3.4 3.2 Z', fill: '#4a4d5a', stroke: '#d0d4de', 'stroke-width': 0.75 }, g); el('path', { d: 'M-1.6 -1 L1.4 -2 M-2.4 1.2 L0.8 0.4', stroke: '#e4e7ee', 'stroke-width': 0.6 }, g); }
+    return g;
+  }
+  function draw() { drawState(st, hour, false); renderTray(); }
+  function renderTray() {
+    if (!trayBox) return;
+    trayBox.innerHTML = '';
+    barEls = [];
+    const counts = {};
+    st.tray.forEach(k => { counts[k] = (counts[k] || 0) + 1; });
+    st.tray.forEach((k, i) => {
+      const b = document.createElement('button');
+      b.className = 'ctl'; b.style.width = '48px'; b.style.height = '52px';
+      b.setAttribute('aria-label', E.FUEL_NAME[k]);
+      const s = document.createElementNS(NS, 'svg'); s.setAttribute('viewBox', '-8 -8 16 16');
+      fuelIcon(s, k, 0, 0, 1); b.appendChild(s);
+      trayBox.appendChild(b);
+      barEls.push({ id: 'fuel:' + E.FUEL_NAME[k], el: b });
+    });
+    const sp = document.createElement('div'); sp.style.flex = '1'; trayBox.appendChild(sp);
+    const w = document.createElement('button'); w.className = 'ctl'; w.setAttribute('aria-label', 'wait one hour');
+    w.innerHTML = '<svg viewBox="0 0 32 32"><path d="M20 6 a11 11 0 1 0 6 18 a9 9 0 1 1 -6 -18 Z" fill="#f2f5f9"/></svg>';
+    trayBox.appendChild(w);
+    barEls.push({ id: 'wait', el: w });
+    if (rebind) rebind(barEls);
+  }
+  let rebind = null;
+  function targetIds() {
+    const out = [];
+    B.pass_list.forEach((p, i) => out.push({ id: 'pass:' + B.names[p.a] + '-' + B.names[p.b], act: ['t', i], el: passEls[i].g }));
+    B.windows.forEach((r, k) => out.push({ id: 'shutter:' + B.names[r], act: ['t', B.np + k], el: winEls[r].g }));
+    B.chimneys.forEach((r, k) => out.push({ id: 'damper:' + B.names[r], act: ['t', B.np + B.nw + k], el: damperEls[r].g }));
+    return out;
+  }
+  function actFor(id) {
+    if (id === 'wait') return ['w', 0];
+    if (id.indexOf('fuel:') === 0) return ['f', E.FUEL_NAME.indexOf(id.slice(5))];
+    const t = targetIds().find(x => x.id === id);
+    return t ? t.act : null;
+  }
+  function showPreview(id) {
+    if (hour >= B.night || E.won(B, st)) return { result: 'none' };
+    const a = actFor(id);
+    if (!a || (a[0] === 'f' && st.tray.indexOf(a[1]) < 0)) return { result: 'none' };
+    const r = E.step(B, st, a);
+    previewOn = true;
+    drawState(r.state, hour + 1, true);
+    svg.classList.add('previewing');
+    layer.frame = el('rect', { x: 1, y: 1, width: 98, height: 128, rx: 3, fill: 'none', stroke: '#ffb25e', 'stroke-width': 0.8, 'stroke-dasharray': '2 1.5' }, layer.fx);
+    return { result: 'hour', heat: r.state.heat, warmedNow: r.ev.warmedNow.map(i => B.names[i]) };
+  }
+  function clearPreview() {
+    if (!previewOn) return;
+    previewOn = false;
+    svg.classList.remove('previewing');
+    if (layer.frame) { layer.frame.remove(); layer.frame = null; }
+    drawState(st, hour, false);
+  }
+  function commit(id) {
+    if (E.won(B, st)) return { log: { result: 'won' } };
+    if (hour >= B.night) return { log: { result: 'dawn' } };
+    const a = actFor(id);
+    if (!a || (a[0] === 'f' && st.tray.indexOf(a[1]) < 0)) return { log: { result: 'none' } };
+    const prev = st, prevHour = hour;
+    const r = E.step(B, st, a);
+    hist.push({ state: prev, hour: prevHour, id: id });
+    st = r.state; hour = prevHour + 1;
+    animateHour(prev, st, r.ev, a);
+    return { log: { result: 'act', action: E.actName(B, a), hour: hour, heat: st.heat.slice(), warmed: B.families.filter(i => (st.wm >> i) & 1).map(i => B.names[i]) } };
+  }
+  function animateHour(prev, next, ev, a) {
+    const mid = { heat: prev.heat, tog: next.tog, wm: prev.wm, cnt: prev.cnt, queue: next.queue, bk: next.bk, bi: next.bi, tray: next.tray };
+    drawState(mid, hour - 1, false); renderTray();
+    const puffs = [];
+    ev.flows.forEach(f => {
+      const ra = rooms[f[0]].rr, rb = rooms[f[1]].rr;
+      const n = Math.min(3, 1 + Math.floor(f[2] / 3));
+      for (let i = 0; i < n; i++) puffs.push({ c: el('circle', { r: 1.6, fill: '#ffb25e', opacity: 0.7 }, layer.fx),
+        ax: ra.x + ra.w / 2 + (i - 1) * 3, ay: ra.y + ra.h / 2, bx: rb.x + rb.w / 2 + (i - 1) * 3, by: rb.y + rb.h / 2, d: i * 0.12 });
+    });
+    const flare = ev.fuelAdded > 0 ? el('circle', { cx: fire.x, cy: fire.y - 4, r: 4, fill: 'url(#glowy)', opacity: 0.9 }, layer.fx) : null;
+    const smoke = ev.overflow.map(o => { const rr = rooms[o[0]].rr; return el('circle', { cx: rr.x + rr.w * 0.8, cy: rr.y + 4, r: 1.5, fill: '#c8cfd8', opacity: 0 }, layer.fx); });
+    return api.tween(api.T.MOVE_MS, p => {
+      const e = api.ease(p);
+      rooms.forEach((rm, i) => { const h = prev.heat[i] + (next.heat[i] - prev.heat[i]) * e; rm.haze.setAttribute('opacity', ((h / 12) * 0.62).toFixed(3)); });
+      puffs.forEach(q => { const t = Math.max(0, Math.min(1, (p - q.d) / (1 - q.d))); q.c.setAttribute('cx', (q.ax + (q.bx - q.ax) * t).toFixed(2)); q.c.setAttribute('cy', (q.ay + (q.by - q.ay) * t).toFixed(2)); q.c.setAttribute('opacity', (0.7 * (1 - t * 0.6)).toFixed(3)); });
+      if (flare) { flare.setAttribute('r', (4 + 6 * p).toFixed(2)); flare.setAttribute('opacity', (0.9 * (1 - p)).toFixed(3)); }
+      smoke.forEach(sm => { sm.setAttribute('opacity', (0.8 * Math.sin(Math.PI * p)).toFixed(3)); sm.setAttribute('cy', (parseFloat(sm.getAttribute('cy')) - 0.05).toFixed(2)); });
+      if (p >= 1) { puffs.forEach(q => q.c.remove()); if (flare) flare.remove(); smoke.forEach(sm => sm.remove()); }
+    }).then(() => api.tween(api.T.EFFECT_MS, p => {
+      ev.warmedNow.forEach(r => { rooms[r].win.glow.setAttribute('opacity', (0.9 * p).toFixed(3)); rooms[r].win.glass.setAttribute('fill', p > 0.4 ? '#ffd36b' : rooms[r].win.glass.getAttribute('fill')); });
+      if (p >= 1) drawState(next, hour, false);
+    }));
+  }
+  function undo() {
+    if (!hist.length) return false;
+    const h = hist.pop(); st = h.state; hour = h.hour; draw(); return true;
+  }
+  function restart() { st = E.initial(B); hour = 0; hist = []; draw(); }
+  function status() {
+    if (E.won(B, st)) return 'won';
+    if (hour >= B.night) return 'stuck';
+    return 'play';
+  }
+  function ending() {
+    const fams = B.families.slice().sort((x, y) => sitData.rooms[x].row - sitData.rooms[y].row);
+    const rings = [];
+    return api.tween(api.T.ENDING_MAIN_MS, p => {
+      const k = Math.min(fams.length - 1, Math.floor(p * fams.length));
+      fams.forEach((r, i) => {
+        const w = rooms[r].win;
+        const on = i <= k;
+        w.glow.setAttribute('opacity', on ? (0.9 + 0.1 * Math.sin(p * 12)).toFixed(3) : '0.9');
+        if (on && rings.indexOf(i) < 0) {
+          rings.push(i);
+          const rr = rooms[r].rr;
+          const ring = el('circle', { cx: rr.x + rr.w / 2, cy: rr.y + rr.h * 0.42, r: 5, fill: 'none', stroke: '#ffd36b', 'stroke-width': 1.2 }, layer.fx);
+          api.tween(500, pp => { ring.setAttribute('r', (5 + 9 * pp).toFixed(2)); ring.setAttribute('opacity', (1 - pp).toFixed(3)); if (pp >= 1) ring.remove(); });
+        }
+      });
+      layer.snowcaps.forEach(sc => { sc.setAttribute('transform', 'translate(0 ' + (3 * p).toFixed(2) + ')'); sc.setAttribute('opacity', (1 - p).toFixed(3)); });
+    }).then(() => api.tween(api.T.ENDING_WARM_MS, p => { layer.warm.setAttribute('opacity', (0.6 * p).toFixed(3)); }));
+  }
+  function load(sit, wrap, barExtra) {
+    sitData = sit; B = E.Building(sit); st = E.initial(B); hour = 0; hist = [];
+    wrap.innerHTML = ''; barExtra.innerHTML = ''; trayBox = barExtra;
+    trayBox.style.display = 'flex'; trayBox.style.gap = '8px'; trayBox.style.alignItems = 'center';
+    svg = el('svg', { class: 'scene', viewBox: '0 0 100 130', preserveAspectRatio: 'xMidYMid meet' }, wrap);
+    svg.setAttribute('role', 'img');
+    layer = {};
+    buildScene(svg, sit);
+    draw();
+  }
+  function targets() {
+    const out = targetIds().map(t => {
+      t.el.setAttribute('role', 'button');
+      t.el.setAttribute('aria-label', t.id.indexOf('pass:') === 0 ? (B.pass_list[t.act[1]].vert ? 'hatch' : 'door') : t.id.indexOf('shutter:') === 0 ? 'window' : 'chimney');
+      return { id: t.id, el: t.el };
+    });
+    return out.concat(barEls);
+  }
+  function setRebind(fn) { rebind = fn; }
+  function updateGoals(box) {
+    box.innerHTML = '';
+    B.families.forEach(i => {
+      const warm = ((st.wm >> i) & 1) === 1;
+      const s = document.createElementNS(NS, 'svg'); s.setAttribute('viewBox', '-7 -7 14 14'); s.setAttribute('width', 20); s.setAttribute('height', 21);
+      el('rect', { x: -5, y: -4.5, width: 10, height: 9, fill: warm ? '#ffd36b' : '#2b3e5e', stroke: '#a9b6c8', 'stroke-width': 0.6 }, s);
+      el('path', { d: 'M0 -4.5 V4.5 M-5 0 H5', stroke: '#1a2438', 'stroke-width': 0.6 }, s);
+      box.appendChild(s);
+    });
+  }
+  function snapshot() {
+    return { hour: hour, heat: st.heat.slice(), warmed: B.families.filter(i => (st.wm >> i) & 1).map(i => B.names[i]),
+             open: B.pass_list.map((p, i) => (st.tog >> i) & 1), tray: st.tray.map(k => E.FUEL_NAME[k]), burning: st.bk >= 0 ? E.FUEL_NAME[st.bk] : null, moves: hist.length };
+  }
+  function historyIds() { return hist.map(h => h.id); }
+  function stuckEvent() { return 'dawn'; }
+  function renderStartPicture(pic, sit, firstId) {
+    const saved = { B: B, st: st, hour: hour, hist: hist, sitData: sitData, layer: layer, rooms: rooms, passEls: passEls, winEls: winEls,
+                    damperEls: damperEls, fire: fire, dots: dots, trayBox: trayBox, barEls: barEls, svg: svg };
+    sitData = sit; B = E.Building(sit); st = E.initial(B); hour = 0; hist = []; layer = {}; trayBox = null;
+    pic.setAttribute('viewBox', '0 0 100 146'); pic.setAttribute('preserveAspectRatio', 'xMidYMid meet');
+    const root = el('g', {}, pic);
+    buildScene(root, sit); drawState(st, 0, false);
+    const y = 132;
+    el('rect', { x: 0, y: y - 2, width: 100, height: 16, fill: '#13203a' }, pic);
+    const spots = {};
+    picIcon(pic, 6, y, 'undo'); picIcon(pic, 20, y, 'restart');
+    st.tray.forEach((k, i) => {
+      const x = 35 + i * 13;
+      el('rect', { x: x, y: y, width: 11, height: 11, rx: 3, fill: '#26395c' }, pic);
+      fuelIcon(pic, k, x + 5.5, y + 5.5, 0.6);
+      if (!spots['fuel:' + E.FUEL_NAME[k]]) spots['fuel:' + E.FUEL_NAME[k]] = [x + 5.5, y + 5.5, 8];
+    });
+    picIcon(pic, 83, y, 'wait');
+    spots['wait'] = [88.5, y + 5.5, 8];
+    targetIds().forEach(t => {
+      const bb = t.el.querySelector('rect');
+      const x = parseFloat(bb.getAttribute('x')), yy = parseFloat(bb.getAttribute('y')), w = parseFloat(bb.getAttribute('width')), h = parseFloat(bb.getAttribute('height'));
+      spots[t.id] = [x + w / 2, yy + h / 2, Math.max(w, h) / 2 + 2];
+    });
+    if (firstId && spots[firstId]) {
+      const s = spots[firstId];
+      el('circle', { cx: s[0], cy: s[1], r: s[2], fill: 'none', stroke: '#ffb25e', 'stroke-width': 1.6, 'stroke-dasharray': '2.2 1.4' }, pic);
+    }
+    picOwnIds(pic);
+    B = saved.B; st = saved.st; hour = saved.hour; hist = saved.hist; sitData = saved.sitData; layer = saved.layer; rooms = saved.rooms;
+    passEls = saved.passEls; winEls = saved.winEls; damperEls = saved.damperEls; fire = saved.fire; dots = saved.dots; trayBox = saved.trayBox;
+    barEls = saved.barEls; svg = saved.svg;
+  }
+  let picSerial = 0;
+  function picIcon(pic, x, y, kind) {
+    el('rect', { x: x, y: y, width: 11, height: 11, rx: 3, fill: '#26395c' }, pic);
+    const g = el('g', { transform: 'translate(' + (x + 1.5) + ' ' + (y + 1.5) + ') scale(0.25)' }, pic);
+    const S = { fill: 'none', stroke: '#f2f5f9', 'stroke-width': 3, 'stroke-linecap': 'round', 'stroke-linejoin': 'round' };
+    if (kind === 'undo') { el('path', Object.assign({ d: 'M12 9 L5 15 L12 21' }, S), g); el('path', Object.assign({ d: 'M6 15 H19 a7 7 0 0 1 0 14 H14' }, S), g); }
+    else if (kind === 'restart') { el('path', Object.assign({ d: 'M25 16 a9 9 0 1 1 -3 -6.7' }, S), g); el('path', Object.assign({ d: 'M23 4 V10 H17' }, S), g); }
+    else if (kind === 'wait') { el('path', { d: 'M20 6 a11 11 0 1 0 6 18 a9 9 0 1 1 -6 -18 Z', fill: '#f2f5f9' }, g); }
+  }
+  function picOwnIds(pic) {
+    const suf = '_pic' + (++picSerial), map = {};
+    pic.querySelectorAll('[id]').forEach(n => { map[n.id] = n.id + suf; n.id = n.id + suf; });
+    pic.querySelectorAll('*').forEach(n => {
+      ['fill', 'stroke', 'filter', 'clip-path', 'mask'].forEach(a => {
+        const v = n.getAttribute(a);
+        if (v && v.indexOf('url(#') === 0) { const id = v.slice(5, -1); if (map[id]) n.setAttribute(a, 'url(#' + map[id] + ')'); }
+      });
+    });
+  }
+  function init(a) { api = a; }
+  return { init, load, targets, setRebind, showPreview, clearPreview, commit, undo, restart, status, ending, updateGoals, snapshot,
+           historyIds, stuckEvent, renderStartPicture,
+           _debug: () => ({ state: st, hour: hour, key: E.key(st), hist: hist.length, building: B }) };
+})();
+
+</script>
+<script>
+
+(function () {
+  'use strict';
+  const CFG = window.Q031_CONFIG;
+  const View = window.CandidateView;
+  const sha256 = window.Q031_SHA256;
+  const reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const K = reduced ? 0.25 : 1;
+  const T = {
+    HOLD_MS: 350, MOVE_MS: Math.round(420 * K), EFFECT_MS: Math.round(280 * K), FADE_MS: Math.round(520 * K),
+    NOLANE_MS: Math.round(320 * K), ENDING_MS: 3000, ENDING_MAIN_MS: 2200, ENDING_WARM_MS: 800,
+    CAP_MS: 12 * 60 * 1000, SKIP_AFTER_MS: 3 * 60 * 1000, EXTRA_CAP_MS: 4 * 60 * 1000,
+    TICK_MS: 250, GAP_MS: 1000, SAVE_EVERY: 2, VERIFY_WAIT_MS: 12000, LOCK_STALE_MS: 3000, MAX_BODY: 380000
+  };
+  const P = new URLSearchParams(location.search);
+  const RX = CFG.receiver && typeof CFG.receiver.url === 'string' && CFG.receiver.url.charAt(0) !== '[' ? CFG.receiver : null;
+  const COMPLETION = typeof CFG.completion === 'string' && CFG.completion && CFG.completion.charAt(0) !== '[' ? CFG.completion : null;
+  const S = {
+    code: (P.get('code') || 'LOCAL-TEST').replace(/[^A-Za-z0-9-]/g, '').slice(0, 24),
+    pos: P.get('pos') === '2' ? 2 : 1,
+    label: P.get('label') === 'B' ? 'B' : 'A',
+    other: (P.get('next') || '').replace(/[^A-Za-z0-9._-]/g, ''),
+    otherLabel: P.get('label') === 'B' ? 'A' : 'B',
+    mode: P.get('mode') === 'extra' ? 'extra' : 'main',
+    dev: P.get('dev') === '1',
+    study: !!(RX && P.get('study') === '1')
+  };
+  const INV_K = 'q031k', CRED = /^[A-Za-z0-9_-]{43}$/;
+  const cryptoOK = !!(window.crypto && window.crypto.getRandomValues);
+  const SSX = (function () {
+    if (!S.study) return null;
+    try { const x = window.sessionStorage; x.setItem('q031_probe', '1'); x.removeItem('q031_probe'); return x; } catch (e) { return null; }
+  })();
+  let INVITE = (function () {
+    const h = window.__q031h || location.hash || '';
+    try { delete window.__q031h; } catch (e) { window.__q031h = undefined; }
+    const m = /^#k=([A-Za-z0-9_-]{43})$/.exec(h);
+    if (h) { try { history.replaceState(history.state, '', location.pathname + location.search); } catch (e) {  } }
+    let k = m && S.study ? m[1] : null;
+    if (SSX) {
+      try {
+        if (k) SSX.setItem(INV_K, k);
+        else { const v = SSX.getItem(INV_K); if (v && CRED.test(v)) k = v; }
+      } catch (e) {  }
+    }
+    return k;
+  })();
+  let consented = S.study && (S.pos === 2 || S.mode === 'extra') && P.get('agreed') === '1';
+  let defunct = false, haveLock = false, blocked = false;
+  const persisting = () => S.study && consented && !defunct && !blocked;
+  const logging = () => !S.study || (consented && !defunct && !blocked);
+  const KEY = 'q031s:' + S.code + ':' + CFG.page + ':' + S.mode;
+  const OBK = 'q031ob', RCK = 'q031rc';
+  const MEM = {};
+  let lsOK = null;
+  const LS = {
+    get(k) {
+      if (lsOK === false) return k in MEM ? JSON.parse(MEM[k]) : null;
+      try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return k in MEM ? JSON.parse(MEM[k]) : null; }
+    },
+    set(k, v) {
+      if (lsOK === null) { try { localStorage.setItem('q031_probe', '1'); localStorage.removeItem('q031_probe'); lsOK = true; } catch (e) { lsOK = false; } }
+      if (lsOK === false) { MEM[k] = JSON.stringify(v); return true; }
+      try { localStorage.setItem(k, JSON.stringify(v)); return true; } catch (e) {
+        try { Object.keys(localStorage).forEach(x => { if (x.indexOf('q031') === 0 && !(x in MEM)) MEM[x] = localStorage.getItem(x); }); } catch (e2) {  }
+        MEM[k] = JSON.stringify(v); lsOK = false; return false;
+      }
+    },
+    del(k) { delete MEM[k]; if (lsOK === false) return; try { localStorage.removeItem(k); } catch (e) {  } },
+    keys() { if (lsOK === false) return Object.keys(MEM); try { return Object.keys(localStorage); } catch (e) { return Object.keys(MEM); } }
+  };
+  const ST = { v: 1, stage: 'start', sitIndex: 0, hist: [], qIndex: 0, seq: 0, sid: null, w0: Date.now(), choice: null, finalQueued: false, final: null };
+  const record = {
+    study: 'Q-031', build: CFG.build, page: CFG.page, code: S.code, pos: S.pos, label: S.label, mode: S.mode, sid: null,
+    events: [], situations: [], answers: {}, finalChoice: null, extra: null, completed: false, clock: null
+  };
+  if (consented) record.consent = { carried: true, version: CFG.consentVersion };
+  let sitId = null, dirty = false;
+  function now() { return Date.now() - ST.w0; }
+  function log(ev, data) {
+    if (!logging()) return;
+    const e = { t: now(), sit: sitId, ev: ev };
+    if (data) for (const k in data) e[k] = data[k];
+    record.events.push(e);
+    dirty = true;
+  }
+  function newSid() {
+    const a = new Uint8Array(16);
+    if (cryptoOK) window.crypto.getRandomValues(a); else for (let i = 0; i < 16; i++) a[i] = Math.floor(Math.random() * 256);
+    return Array.from(a, b => b.toString(16).padStart(2, '0')).join('');
+  }
+  function newCap() {
+    const a = new Uint8Array(32); window.crypto.getRandomValues(a);
+    return btoa(String.fromCharCode.apply(null, Array.from(a))).replace(/[+]/g, '-').replace(/[/]/g, '_').replace(/=+$/, '');
+  }
+  const GK = 'q031g:' + S.code;
+  const okSession = v => !!(v && typeof v === 'object' && /^[0-9a-f]{32}$/.test(v.gs) && CRED.test(v.rc));
+  function ssGet(k) { if (!SSX) return null; try { const v = SSX.getItem(k); return v ? JSON.parse(v) : null; } catch (e) { return null; } }
+  function ssSet(k, v) { if (!SSX) return; try { SSX.setItem(k, JSON.stringify(v)); } catch (e) {  } }
+  function getSession() { const a = LS.get(GK); if (okSession(a)) return a; const b = ssGet(GK); return okSession(b) ? b : null; }
+  function startSession() {
+    const s = getSession() || { gs: newSid(), rc: newCap() };
+    LS.set(GK, s); ssSet(GK, s);
+    return s;
+  }
+  let rvMemo = null;
+  function auth() {
+    const s = getSession();
+    if (!INVITE || !s || blocked) return null;
+    if (!rvMemo || rvMemo.rc !== s.rc) rvMemo = { rc: s.rc, rv: sha256('q031-readback-v1:' + s.rc) };
+    return { k: INVITE, gs: s.gs, rv: rvMemo.rv };
+  }
+  function forgetInvite() {
+    INVITE = null; rvMemo = null;
+    if (SSX) { try { SSX.removeItem(INV_K); SSX.removeItem(GK); } catch (e) {  } }
+    LS.del(GK);
+  }
+  function save(force) {
+    if (!persisting()) return;
+    if (ST.stage === 'done') {
+      LS.del(KEY + ':rec'); dirty = false;
+      LS.set(KEY, { st: doneMarker(ST) });
+      return;
+    }
+    if (force || dirty) {
+      record.clock = clockView();
+      if (ST.stage === 'done') LS.del(KEY + ':rec'); else LS.set(KEY + ':rec', record);
+      dirty = false;
+    }
+    LS.set(KEY, { st: ST, clk: clockRaw(), savedAt: Date.now() });
+  }
+  function doneMarker(st) { return { v: st.v, stage: 'done', sid: st.sid, seq: st.seq, final: ST.final }; }
+  function setStage(s, extra) { ST.stage = s; if (extra) Object.assign(ST, extra); dirty = true; save(true); }
+  const TAB = newSid().slice(0, 12);
+  const LKK = 'q031lk:' + S.code;
+  const lockNow = () => LS.get(LKK);
+  function holdLock() { LS.set(LKK, { tab: TAB, t: Date.now(), hidden: !pageVisible() }); haveLock = true; }
+  function takeOver() {
+    const l = lockNow();
+    const live = !!(l && l.tab !== TAB && !l.hidden && Date.now() - (l.t || 0) <= T.LOCK_STALE_MS);
+    holdLock();
+    return live;
+  }
+  function lockLost() { if (!haveLock) return false; const l = lockNow(); return !!(l && l.tab !== TAB); }
+  function goDefunct() {
+    if (defunct) return;
+    accrue(); defunct = true; haveLock = false; phaseOn = false; inputEnabled = false;
+    sheet('finish', '<h1>Continued in another tab</h1><p id="tab-moved">This study is now open in another tab or window. Please continue there. If you have closed it, reload this page to continue here.</p>', []);
+  }
+  window.addEventListener('storage', e => { if (e.key === LKK && lockLost()) goDefunct(); });
+  const CLK = { phase: null, capMs: T.CAP_MS, candMs: 0, sitMs: 0, hides: 0, shows: 0, hiddenMs: 0, gaps: 0, gapMs: 0,
+                resumes: 0, resumeGapMs: 0, mainMs: null, extraMs: null };
+  let clkT = null, clkSit = false, hiddenAt = null, hidden = document.visibilityState === 'hidden', leaving = false;
+  let phaseOn = false, resumeWait = false, sitActive = false, skipShown = false, tickN = 0;
+  const pageVisible = () => !hidden && document.visibilityState !== 'hidden';
+  const counting = () => phaseOn && !resumeWait && pageVisible();
+  function accrue() {
+    const t = performance.now();
+    if (clkT !== null) {
+      let d = t - clkT;
+      if (d > T.GAP_MS) { CLK.gaps++; CLK.gapMs += Math.round(d); d = 0; }
+      if (d > 0) { CLK.candMs += d; if (clkSit) CLK.sitMs += d; }
+    }
+    if (counting()) { clkT = t; clkSit = sitActive; } else { clkT = null; clkSit = false; }
+  }
+  function clockRaw() {
+    const c = Object.assign({}, CLK); c.candMs = Math.floor(CLK.candMs); c.sitMs = Math.floor(CLK.sitMs); return c;
+  }
+  function clockView() {
+    const cand = Math.floor(CLK.candMs), sit = Math.floor(CLK.sitMs);
+    return { phase: CLK.phase, candMs: cand, sitMs: sit, candRemainingMs: CLK.phase ? Math.max(0, CLK.capMs - cand) : null,
+             skipInMs: sitActive ? Math.max(0, T.SKIP_AFTER_MS - sit) : null, hides: CLK.hides, shows: CLK.shows,
+             hiddenMs: CLK.hiddenMs, gaps: CLK.gaps, gapMs: CLK.gapMs, resumes: CLK.resumes, resumeGapMs: CLK.resumeGapMs,
+             mainMs: CLK.mainMs, extraMs: CLK.extraMs };
+  }
+  function checkClock() {
+    if (!phaseOn || resumeWait) return;
+    if (!capExpired && CLK.candMs >= CLK.capMs) onCap();
+    if (sitActive && !skipShown && sitDone === null && CLK.sitMs >= T.SKIP_AFTER_MS) {
+      skipShown = true; $('btn-skip').hidden = false; log('skip_offered', { el: Math.floor(CLK.sitMs) });
+    }
+  }
+  let lastTickAt = null;
+  function tick() {
+    lastTickAt = performance.now();
+    if (defunct) return;
+    if (lockLost()) { goDefunct(); return; }
+    accrue(); checkClock();
+    tickN += 1;
+    if (tickN % T.SAVE_EVERY === 0) { if (haveLock) holdLock(); if (phaseOn || dirty) save(dirty); }
+  }
+  function onHide() {
+    if (hidden || leaving || defunct) return;
+    if (lockLost()) { goDefunct(); return; }
+    accrue(); hidden = true; accrue();
+    if (haveLock) holdLock();
+    CLK.hides++; hiddenAt = Date.now();
+    log('page_hidden');
+    save(true);
+    closingCopy();
+  }
+  function onShow() {
+    if (!hidden || document.visibilityState === 'hidden' || defunct) return;
+    if (lockLost()) { goDefunct(); return; }
+    hidden = false; CLK.shows++;
+    if (haveLock) holdLock();
+    if (hiddenAt !== null) { CLK.hiddenMs += Math.max(0, Date.now() - hiddenAt); hiddenAt = null; }
+    accrue();
+    log('page_shown');
+    save(true);
+    flush();
+  }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') onHide(); else onShow(); });
+  window.addEventListener('pagehide', onHide);
+  window.addEventListener('pagehide', e => { if (!e.persisted && haveLock && !lockLost()) { LS.del(LKK); haveLock = false; } });
+  window.addEventListener('pageshow', e => { if (e.persisted && leaving) { location.reload(); return; } if (e.persisted) onShow(); });
+  const ERR = ['Error', 'TypeError', 'RangeError', 'ReferenceError', 'SyntaxError', 'EvalError', 'URIError', 'SecurityError',
+               'QuotaExceededError', 'NotAllowedError', 'NetworkError', 'AbortError', 'InvalidStateError', 'DataCloneError'];
+  function errCat(x) { const n = x && typeof x === 'object' ? x.name : null; return ERR.indexOf(n) >= 0 ? n : 'Other'; }
+  window.addEventListener('error', e => log('page_error', { kind: 'error', cat: errCat(e && e.error) }));
+  window.addEventListener('unhandledrejection', e => log('page_error', { kind: 'rejection', cat: errCat(e && e.reason) }));
+  const tweens = new Set();
+  function tween(ms, fn) {
+    return new Promise(resolve => {
+      const tw = { start: performance.now(), ms: Math.max(1, ms), fn: fn, resolve: resolve, done: false };
+      tweens.add(tw);
+      function frame() {
+        if (tw.done) return;
+        const p = Math.min(1, (performance.now() - tw.start) / tw.ms);
+        try { fn(p); } catch (e) { console.error(e); }
+        if (p >= 1) { tw.done = true; tweens.delete(tw); resolve(); } else requestAnimationFrame(frame);
+      }
+      requestAnimationFrame(frame);
+    });
+  }
+  function finishAll() {
+    for (const tw of Array.from(tweens)) {
+      if (tw.done) continue;
+      tw.done = true; tweens.delete(tw);
+      try { tw.fn(1); } catch (e) { console.error(e); }
+      tw.resolve();
+    }
+  }
+  function busy() { return tweens.size > 0; }
+  const ease = p => (p < 0.5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2);
+  const $ = id => document.getElementById(id);
+  function show(id) {
+    document.querySelectorAll('.screen').forEach(el => { el.hidden = el.id !== id; });
+  }
+  let endingPlaying = false;
+  let inputEnabled = false;
+  function bindTarget(el, id) {
+    el.setAttribute('data-tgt', id);
+    let holdTimer = null, previewing = false, active = false, pid = null;
+    function cancel(reason) {
+      if (!active) return;
+      active = false;
+      if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+      if (previewing) { View.clearPreview(); previewing = false; }
+      log('cancel', { target: id, reason: reason });
+    }
+    el.addEventListener('pointerdown', ev => {
+      if (!inputEnabled || endingPlaying) return;
+      ev.preventDefault();
+      finishAll();
+      active = true; pid = ev.pointerId; previewing = false;
+      try { el.setPointerCapture(ev.pointerId); } catch (e) {  }
+      log('press', { target: id });
+      holdTimer = setTimeout(() => {
+        holdTimer = null;
+        if (!active) return;
+        previewing = true;
+        const d = View.showPreview(id);
+        log('hold', { target: id, preview: d });
+      }, T.HOLD_MS);
+    });
+    el.addEventListener('pointermove', ev => {
+      if (!active || ev.pointerId !== pid) return;
+      const hit = document.elementFromPoint(ev.clientX, ev.clientY);
+      const t = hit && hit.closest ? hit.closest('[data-tgt]') : null;
+      if (t !== el) cancel('slid-off');
+    });
+    el.addEventListener('pointerup', ev => {
+      if (!active || ev.pointerId !== pid) return;
+      active = false;
+      if (holdTimer) { clearTimeout(holdTimer); holdTimer = null; }
+      if (previewing) { View.clearPreview(); previewing = false; }
+      commit(id);
+    });
+    el.addEventListener('pointercancel', () => cancel('pointercancel'));
+    el.addEventListener('contextmenu', ev => ev.preventDefault());
+  }
+  function commit(id) {
+    accrue(); checkClock();
+    if (!inputEnabled || endingPlaying) return;
+    finishAll();
+    const r = View.commit(id);
+    log('tap', Object.assign({ target: id }, r.log || {}));
+    afterAction();
+  }
+  function iconUndo() { return '<svg viewBox="0 0 32 32"><path d="M12 9 L5 15 L12 21" fill="none" stroke="#f2f5f9" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/><path d="M6 15 H19 a7 7 0 0 1 0 14 H14" fill="none" stroke="#f2f5f9" stroke-width="3" stroke-linecap="round"/></svg>'; }
+  function iconRestart() { return '<svg viewBox="0 0 32 32"><path d="M25 16 a9 9 0 1 1 -3 -6.7" fill="none" stroke="#f2f5f9" stroke-width="3" stroke-linecap="round"/><path d="M23 4 V10 H17" fill="none" stroke="#f2f5f9" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>'; }
+  function buildPlayScreen() {
+    const play = $('play');
+    play.innerHTML = '';
+    const head = document.createElement('div'); head.className = 'head';
+    head.innerHTML = '<div class="label" id="cand-label"></div><div class="goals" id="goals"></div><div class="dots" id="dots"></div>';
+    const wrap = document.createElement('div'); wrap.className = 'scene-wrap'; wrap.id = 'scene-wrap';
+    const bar = document.createElement('div'); bar.className = 'bar'; bar.id = 'bar';
+    bar.innerHTML = '<button class="ctl" id="btn-undo" aria-label="Undo">' + iconUndo() + '</button>' +
+      '<button class="ctl" id="btn-restart" aria-label="Restart">' + iconRestart() + '</button>' +
+      '<div class="spacer" id="bar-extra"></div>' +
+      '<button class="skip" id="btn-skip" hidden>Next challenge</button>' +
+      '<button class="skip" id="btn-next" hidden>Next challenge</button>';
+    play.appendChild(head); play.appendChild(wrap); play.appendChild(bar);
+    $('btn-undo').addEventListener('click', () => {
+      accrue(); checkClock();
+      if (!inputEnabled || endingPlaying) return;
+      finishAll();
+      const ok = View.undo();
+      log('undo', { done: ok });
+      afterAction();
+    });
+    $('btn-restart').addEventListener('click', () => {
+      accrue(); checkClock();
+      if (!inputEnabled || endingPlaying) return;
+      finishAll();
+      View.restart();
+      log('restart');
+      afterAction();
+    });
+    $('btn-skip').addEventListener('click', () => {
+      accrue(); checkClock();
+      if (!inputEnabled || endingPlaying || !skipShown) return;
+      log('skip');
+      endSituation('skipped');
+    });
+    $('btn-next').addEventListener('click', () => {
+      if (!awaitingNext) return;
+      awaitingNext = false;
+      $('btn-next').hidden = true; $('btn-next').classList.remove('pulse');
+      log('next');
+      startSituation(sitIndex + 1);
+    });
+  }
+  let sitList = [], sitIndex = 0;
+  let sitDone = null, phaseResolve = null, curSummary = null, capExpired = false, awaitingNext = false;
+  function setDots() {
+    const dots = $('dots'); dots.innerHTML = '';
+    if (S.mode === 'extra') return;
+    sitList.forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i < sitIndex ? ' done' : i === sitIndex ? ' now' : '');
+      dots.appendChild(d);
+    });
+  }
+  function afterAction() {
+    View.updateGoals($('goals'));
+    ST.hist = View.historyIds(); dirty = true;
+    const st = View.status();
+    const stuck = st === 'stuck';
+    $('btn-undo').classList.toggle('pulse', stuck);
+    $('btn-restart').classList.toggle('pulse', stuck);
+    if (stuck && curSummary && !curSummary._stuckLogged) { log(View.stuckEvent()); curSummary._stuckLogged = true; }
+    if (!stuck && curSummary) curSummary._stuckLogged = false;
+    if (st === 'won' && !endingPlaying && sitDone === null) {
+      inputEnabled = false;
+      endingPlaying = true;
+      log('win');
+      waitIdle().then(() => View.ending()).then(() => {
+        endingPlaying = false;
+        endSituation('solved');
+      });
+    }
+  }
+  function waitIdle() {
+    return new Promise(res => { (function chk() { if (!busy()) res(); else requestAnimationFrame(chk); })(); });
+  }
+  function loadSituation(i) {
+    sitIndex = i;
+    const sit = sitList[i];
+    sitId = sit.id;
+    $('cand-label').textContent = 'Candidate ' + S.label;
+    setDots();
+    if (View.setRebind) View.setRebind(null);
+    View.load(sit, $('scene-wrap'), $('bar-extra'));
+    View.targets().forEach(t => bindTarget(t.el, t.id));
+    if (View.setRebind) View.setRebind(list => list.forEach(t => bindTarget(t.el, t.id)));
+    View.updateGoals($('goals'));
+    $('btn-skip').hidden = true;
+    $('btn-undo').classList.remove('pulse'); $('btn-restart').classList.remove('pulse');
+  }
+  function startSituation(i) {
+    accrue();
+    curSummary = { id: sitList[i].id, start: now(), end: null, outcome: null, taps: 0, holds: 0, undos: 0, restarts: 0, elMs: null };
+    record.situations.push(curSummary);
+    loadSituation(i);
+    CLK.sitMs = 0; skipShown = false; sitDone = null; sitActive = true;
+    accrue();
+    ST.sitIndex = i; ST.hist = [];
+    inputEnabled = true;
+    log('sit_start', { snapshot: View.snapshot(), el: Math.floor(CLK.candMs) });
+    save(true);
+    checkClock();
+  }
+  function resumeSituation(i, hist) {
+    curSummary = record.situations[record.situations.length - 1];
+    loadSituation(i);
+    View.restart();
+    (hist || []).forEach(id => { View.commit(id); finishAll(); });
+    sitDone = null; sitActive = true;
+    skipShown = CLK.sitMs >= T.SKIP_AFTER_MS; $('btn-skip').hidden = !skipShown;
+    accrue();
+    inputEnabled = true;
+    afterAction();
+  }
+  function endSituation(outcome) {
+    if (sitDone !== null) return;
+    accrue();
+    sitDone = outcome;
+    sitActive = false;
+    accrue();
+    inputEnabled = false;
+    finishAll();
+    curSummary.end = now(); curSummary.outcome = outcome; curSummary.elMs = Math.floor(CLK.sitMs);
+    const c = record.events.filter(e => e.sit === sitId);
+    curSummary.taps = c.filter(e => e.ev === 'tap').length;
+    curSummary.holds = c.filter(e => e.ev === 'hold').length;
+    curSummary.undos = c.filter(e => e.ev === 'undo').length;
+    curSummary.restarts = c.filter(e => e.ev === 'restart').length;
+    curSummary.history = View.historyIds();
+    delete curSummary._stuckLogged;
+    log('sit_end', { outcome: outcome, snapshot: View.snapshot(), el: Math.floor(CLK.candMs) });
+    sitId = null;
+    save(true);
+    enqueue(false);
+    if (outcome === 'timeout' || capExpired || S.mode === 'extra' || sitIndex >= sitList.length - 1) {
+      if (phaseResolve) phaseResolve();
+      return;
+    }
+    if (outcome === 'solved') {
+      awaitingNext = true;
+      $('btn-skip').hidden = true;
+      $('btn-next').hidden = false; $('btn-next').classList.add('pulse');
+      return;
+    }
+    startSituation(sitIndex + 1);
+  }
+  function onCap() {
+    if (capExpired) return;
+    capExpired = true;
+    log('timeout', { el: Math.floor(CLK.candMs) });
+    if (endingPlaying) return;
+    finishAll();
+    if (endingPlaying) return;
+    if (awaitingNext || !sitActive) { if (phaseResolve) phaseResolve(); return; }
+    if (sitDone === null) endSituation('timeout');
+  }
+  function runPhase(list, capMsArg, phase, resuming) {
+    return new Promise(resolve => {
+      sitList = list; capExpired = false; awaitingNext = false;
+      CLK.capMs = capMsArg; CLK.phase = phase;
+      if (!resuming) { CLK.candMs = 0; CLK.sitMs = 0; }
+      phaseResolve = () => {
+        phaseResolve = null; awaitingNext = false; $('btn-next').hidden = true;
+        accrue(); phaseOn = false; sitActive = false; accrue();
+        if (phase === 'main') CLK.mainMs = Math.floor(CLK.candMs); else CLK.extraMs = Math.floor(CLK.candMs);
+        CLK.phase = null;
+        save(true);
+        resolve();
+      };
+      accrue(); phaseOn = true; accrue();
+      show('play');
+      if (!resuming) startSituation(0);
+      else {
+        const last = record.situations[record.situations.length - 1];
+        if (!last) startSituation(0);
+        else if (last.outcome === null) resumeSituation(ST.sitIndex, ST.hist);
+        else if (last.outcome === 'timeout' || S.mode === 'extra' || ST.sitIndex >= list.length - 1) phaseResolve();
+        else startSituation(ST.sitIndex + 1);
+      }
+      checkClock();
+    });
+  }
+  const QUESTIONS = [
+    { id: 'Q1', text: 'What were you trying to do in these challenges?' },
+    { id: 'Q2', text: 'How would you explain how this candidate works to someone who has not played it?' },
+    { id: 'Q3', text: 'Here is the start of one challenge you played. The dashed circle marks the first thing you chose. Why did you choose that place or control? What did you choose next, and why?', picture: true },
+    { id: 'Q4', text: 'What changed after that action?', picture: true },
+    { id: 'Q5', text: 'When a challenge ended, what did the ending show?', needsSolved: true },
+    { id: 'Q6', text: 'Did anything behave differently from what you expected?' },
+    { id: 'Q7', text: 'Would you choose another challenge from this candidate now?', options: ['Yes', 'No', 'Not sure'] }
+  ];
+  function anchorSituation() {
+    record.situations.forEach(s => {
+      if (s.history && s.history.length) return;
+      const firsts = record.events.filter(e => e.sit === s.id && e.ev === 'tap' && (e.result === 'move' || e.result === 'act'));
+      s.history = firsts.map(e => e.target);
+    });
+    const played = record.situations.filter(s => s.history && s.history.length > 0);
+    const dec = played.filter(s => CFG.decisionIds.indexOf(s.id) >= 0 && s.history.length >= 2);
+    const pick = dec.length ? dec[dec.length - 1] : (played.length ? played[played.length - 1] : null);
+    return pick;
+  }
+  function askQuestions(startAt) {
+    return new Promise(resolve => {
+      const anchor = anchorSituation();
+      const solvedAny = record.situations.some(s => s.outcome === 'solved');
+      const qs = QUESTIONS.filter(q => !(q.picture && !anchor) && !(q.needsSolved && !solvedAny));
+      record.answers.anchor = anchor ? { sit: anchor.id, first: anchor.history[0], second: anchor.history[1] || null } : null;
+      QUESTIONS.forEach(q => { if (qs.indexOf(q) < 0) record.answers[q.id] = { skipped_by_rule: true }; });
+      let k = startAt || 0;
+      const scr = $('question');
+      function render() {
+        if (k >= qs.length) { log('questions_end'); resolve(); return; }
+        const q = qs[k];
+        scr.innerHTML = '';
+        const w = document.createElement('div'); w.className = 'qwrap';
+        w.innerHTML = '<div class="qn">Candidate ' + S.label + ' · question ' + (k + 1) + ' of ' + qs.length + '</div>' +
+          '<div class="qtext">' + q.text + '</div>';
+        if (q.picture && anchor) {
+          const pic = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+          pic.setAttribute('class', 'pic');
+          View.renderStartPicture(pic, CFG.situations.concat([CFG.extra]).find(s => s.id === anchor.id), anchor.history[0]);
+          w.appendChild(pic);
+        }
+        let choice = null;
+        if (q.options) {
+          const o = document.createElement('div'); o.className = 'opts';
+          q.options.forEach(opt => {
+            const b = document.createElement('button'); b.className = 'btn quiet'; b.textContent = opt;
+            b.addEventListener('click', () => { choice = opt; o.querySelectorAll('.btn').forEach(x => x.classList.toggle('sel', x === b)); });
+            o.appendChild(b);
+          });
+          w.appendChild(o);
+        }
+        const ta = document.createElement('textarea'); ta.maxLength = 600;
+        ta.setAttribute('aria-label', 'Your answer');
+        if (q.options) ta.placeholder = 'Why? (optional)';
+        w.appendChild(ta);
+        const fine = document.createElement('div'); fine.className = 'fine sheet'; fine.style.padding = '0';
+        fine.innerHTML = '<p class="fine">Short answers are fine. "Not sure" is a fine answer. Please do not include names or contact details.</p>';
+        w.appendChild(fine);
+        const next = document.createElement('button'); next.className = 'btn'; next.textContent = 'Next';
+        next.addEventListener('click', () => {
+          record.answers[q.id] = { text: ta.value.slice(0, 600), choice: choice, t: now() };
+          log('answer', { q: q.id });
+          k += 1; ST.qIndex = k; save(true);
+          render();
+        });
+        w.appendChild(next);
+        scr.appendChild(w);
+        scr.scrollTop = 0;
+      }
+      if (!startAt) log('questions_start');
+      show('question');
+      render();
+    });
+  }
+  const OB = () => LS.get(OBK) || {};
+  const mine = ob => Object.keys(ob).filter(sid => ob[sid] && ob[sid].code === S.code);
+  const RC = () => LS.get(RCK) || {};
+  function envelope(e, a) {
+    return JSON.stringify({ q: 'Q031', sid: e.sid, seq: e.seq, final: e.final, test: !!CFG.testRows, digest: e.digest, body: e.body, auth: a })
+      .replace(/[\u007f-\uffff]/g, c => '\\u' + ('000' + c.charCodeAt(0).toString(16)).slice(-4));
+  }
+  function serialize() {
+    let body = JSON.stringify(record);
+    if (body.length <= T.MAX_BODY) return body;
+    const r = Object.assign({}, record);
+    const all = record.events, drops = [['press'], ['press', 'hold', 'cancel']];
+    for (const d of drops) {
+      r.events = all.filter(e => d.indexOf(e.ev) < 0);
+      r.compacted = { dropped: d, kept: r.events.length, of: all.length, fromEvent: 0 };
+      body = JSON.stringify(r);
+      if (body.length <= T.MAX_BODY) return body;
+    }
+    const keep = r.events;
+    let n = keep.length;
+    while (n > 0 && body.length > T.MAX_BODY) {
+      n = Math.floor(n * 0.8);
+      r.events = keep.slice(keep.length - n);
+      r.compacted = { dropped: drops[1], kept: n, of: all.length, fromEvent: keep.length - n };
+      body = JSON.stringify(r);
+    }
+    return body;
+  }
+  function enqueue(final) {
+    if (!persisting() || !ST.sid) return null;
+    accrue(); record.clock = clockView();
+    const body = serialize();
+    ST.seq += 1;
+    const e = { sid: ST.sid, seq: ST.seq, final: !!final, body: body, digest: sha256(body), code: S.code };
+    const ob = OB(); ob[ST.sid] = e; LS.set(OBK, ob);
+    save(true);
+    flush();
+    return e;
+  }
+  function closingCopy() {
+    if (!persisting() || !ST.sid || ST.stage === 'done') return;
+    const e = ST.finalQueued ? OB()[ST.sid] : enqueue(false);
+    const a = auth();
+    if (!e || !a) return;
+    const env = envelope(e, a);
+    try { if (env.length < 60000 && navigator.sendBeacon) navigator.sendBeacon(RX.url, new Blob([env], { type: 'text/plain' })); } catch (err) {  }
+  }
+  let jsonpN = 0;
+  function readback(sid) {
+    const s = getSession();
+    if (!s) return Promise.resolve(null);
+    const u = RX.url + (RX.url.indexOf('?') < 0 ? '?' : '&') + 'op=receipt&sid=' + encodeURIComponent(sid) + '&gs=' + s.gs + '&rc=' + s.rc;
+    if (RX.readback === 'json') {
+      return new Promise(res => {
+        const to = setTimeout(() => res(null), 10000);
+        fetch(u, { cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer' }).then(r => (r.ok ? r.json() : null)).then(v => { clearTimeout(to); res(v); }, () => { clearTimeout(to); res(null); });
+      });
+    }
+    return new Promise(res => {
+      const cb = '__q031rb' + Date.now().toString(36) + (jsonpN++), sc = document.createElement('script');
+      let to = null;
+      const done = v => { clearTimeout(to); window[cb] = function () {}; if (sc.parentNode) sc.parentNode.removeChild(sc); res(v); };
+      window[cb] = v => done(v);
+      sc.onerror = () => done(null);
+      to = setTimeout(() => done(null), 10000);
+      sc.referrerPolicy = 'no-referrer';
+      sc.src = u + '&cb=' + cb;
+      document.head.appendChild(sc);
+    });
+  }
+  const pause = ms => new Promise(r => setTimeout(r, ms));
+  async function deliver(e) {
+    const a = auth();
+    if (!a) return { ok: false, why: 'no_invite' };
+    const env = envelope(e, a);
+    try { await fetch(RX.url, { method: 'POST', mode: 'no-cors', cache: 'no-store', credentials: 'omit', referrerPolicy: 'no-referrer', headers: { 'Content-Type': 'text/plain' }, body: env, keepalive: env.length < 60000 }); }
+    catch (err) {  }
+    for (let k = 0; k < 2; k++) {
+      if (defunct) return { ok: false, why: 'defunct' };
+      const r = await readback(e.sid);
+      if (r && r.ok === true && r.sid === e.sid) {
+        if (r.seq === e.seq && r.digest === e.digest && r.final === e.final) return { ok: true, r: r };
+        if (r.final && !(e.final && r.seq === e.seq)) return { superseded: true, stored: r.seq };
+        if (r.seq === e.seq) return { bump: e.seq + 1, why: 'mismatch', stored: r.seq };
+        if (r.seq > e.seq) return { bump: r.seq + 1, why: 'behind', stored: r.seq };
+        return { ok: false, why: 'not_stored' };
+      }
+      if (r && r.ok === false && (r.error === 'not_found' || r.error === 'unauthorized')) return { ok: false, why: r.error };
+      await pause(800);
+    }
+    return { ok: false, why: 'no_readback' };
+  }
+  let flushing = false, flushAgain = false, retryT = null, retryN = 0;
+  const waiters = [];
+  async function flush() {
+    if (!S.study || !RX || !consented || defunct || blocked || !auth()) return;
+    if (flushing) { flushAgain = true; return; }
+    flushing = true;
+    let bumps = 0;
+    try {
+      do {
+        flushAgain = false;
+        const ob = OB();
+        const sids = mine(ob).sort((a, b) => (a === ST.sid ? -1 : b === ST.sid ? 1 : 0));
+        for (const sid of sids) {
+          if (defunct) break;
+          const e = ob[sid];
+          const d = await deliver(e);
+          if (d.ok) {
+            const rc = RC(); rc[sid] = { seq: e.seq, final: e.final, receipt: d.r.receipt, code: d.r.code || null }; LS.set(RCK, rc);
+            const cur = OB(); if (cur[sid] && cur[sid].seq === e.seq) { delete cur[sid]; LS.set(OBK, cur); }
+            if (sid === ST.sid) log('receipt', { seq: e.seq, receipt: d.r.receipt });
+          } else if (d.superseded) {
+            const cur = OB(); if (cur[sid] && cur[sid].seq === e.seq) { delete cur[sid]; LS.set(OBK, cur); }
+            if (sid === ST.sid) log('superseded', { seq: e.seq, stored: d.stored });
+          } else if (d.bump && bumps < 3) {
+            bumps += 1;
+            const cur = OB();
+            if (cur[sid] && cur[sid].seq === e.seq) {
+              if (sid === ST.sid) {
+                log(d.why === 'behind' ? 'seq_behind' : 'stored_mismatch', { seq: e.seq, stored: d.stored });
+                ST.seq = Math.max(ST.seq, d.bump - 1);
+                enqueue(e.final);
+              } else { cur[sid].seq = d.bump; LS.set(OBK, cur); }
+            }
+            flushAgain = true;
+          }
+        }
+      } while (flushAgain);
+    } finally {
+      flushing = false;
+      if (mine(OB()).length) { if (!retryT) { const d = [2, 5, 10, 20, 40, 60][Math.min(retryN++, 5)] * 1000; retryT = setTimeout(() => { retryT = null; flush(); }, d); } }
+      else { retryN = 0; if (ST.stage === 'done') forgetInvite(); }
+      waiters.slice().forEach(w => w());
+    }
+  }
+  window.addEventListener('online', () => { retryN = 0; flush(); });
+  function verified(sid, seq) { const r = RC()[sid]; return !!(r && r.seq >= seq); }
+  function waitVerified(sid, seq, ms) {
+    return new Promise(res => {
+      if (verified(sid, seq)) { res(true); return; }
+      let to = null;
+      const w = () => { if (verified(sid, seq)) settle(true); };
+      const settle = v => { clearTimeout(to); const i = waiters.indexOf(w); if (i >= 0) waiters.splice(i, 1); res(v); };
+      waiters.push(w);
+      to = setTimeout(() => settle(verified(sid, seq)), ms);
+      flush();
+    });
+  }
+  async function savedOrRetry(why) {
+    if (!persisting() || !ST.sid) return true;
+    const ob = OB()[ST.sid];
+    const seq = ob ? ob.seq : ST.seq;
+    const start = why === 'agreement';
+    let tries = 0;
+    for (;;) {
+      sheet('saving', start ? '<h1>Starting</h1><p id="saving-status">Connecting to the study…</p>' : '<h1>Saving</h1><p id="saving-status">Saving your answers…</p>', []);
+      if (await waitVerified(ST.sid, seq, T.VERIFY_WAIT_MS)) { log('saved_verified', { why: why, seq: seq }); return true; }
+      tries += 1;
+      log('save_unverified', { why: why, tries: tries });
+      save(true);
+      await new Promise(res => {
+        const w = () => { if (verified(ST.sid, seq)) { const i = waiters.indexOf(w); if (i >= 0) waiters.splice(i, 1); res(); } };
+        waiters.push(w);
+        const nocode = tries >= 2 ? '<p class="fine" id="nocode">If this keeps failing, you can stop here: return to ' + CFG.platform +
+          ', use its option for finishing without a completion code, and message the researcher with your study code <b>' + S.code +
+          '</b>. Genuine participation will be paid.</p>' : '';
+        sheet('saving', (start ? '<h1 id="agree-unverified">Could not start yet</h1><p id="saving-status">The study could not confirm that this browser is connected to your study session. If you have already started this study in another browser or on another device, please continue there. Otherwise, please check your connection and try again.</p>'
+          : '<h1>Not saved yet</h1><p id="saving-status">Your answers have not been confirmed as saved yet. Please check your connection and try again.</p>') + nocode,
+          [{ text: 'Try again', id: 'btn-retry', on: () => { const i = waiters.indexOf(w); if (i >= 0) waiters.splice(i, 1); retryN = 0; res(); } }]);
+      });
+    }
+  }
+  function sheet(id, html, buttons) {
+    const scr = $(id); scr.innerHTML = '';
+    const w = document.createElement('div'); w.className = 'sheet'; w.style.display = 'flex'; w.style.flexDirection = 'column';
+    w.innerHTML = html;
+    const c = document.createElement('div'); c.className = 'choices';
+    buttons.forEach(b => {
+      const el = document.createElement('button'); el.className = 'btn' + (b.quiet ? ' quiet' : ''); el.textContent = b.text;
+      if (b.id) el.id = b.id;
+      el.addEventListener('click', b.on); c.appendChild(el);
+    });
+    w.appendChild(c); scr.appendChild(w); show(id);
+  }
+  function intro() {
+    return new Promise(resolve => {
+      sheet('intro', '<h1>Candidate ' + S.label + '</h1><p>Five short challenges. Play them in whatever way makes sense to you.</p>',
+        [{ text: 'Start', id: 'btn-start', on: () => { log('intro_start'); resolve(); } }]);
+    });
+  }
+  function resumeScreen() {
+    return new Promise(resolve => {
+      resumeWait = true; accrue();
+      sheet('resume', '<h1>Candidate ' + S.label + '</h1><p>Continue where you left off.</p>',
+        [{ text: 'Continue', id: 'btn-resume', on: () => { resumeWait = false; accrue(); resolve(); } }]);
+    });
+  }
+  function consent() {
+    return new Promise(resolve => {
+      sheet('consent', CFG.consentHtml, [
+        { text: 'Start', id: 'btn-consent', on: () => { if ($('agree').checked) { consented = true; record.consent = { at: 0, version: CFG.consentVersion }; resolve(true); } } },
+        { text: 'I do not agree', quiet: true, on: () => { forgetInvite(); resolve(false); } }]);
+      const btn = $('btn-consent'); btn.disabled = true;
+      $('agree').addEventListener('change', () => { btn.disabled = !$('agree').checked; });
+    });
+  }
+  function goOther(extraParams) {
+    const u = S.other + '?code=' + encodeURIComponent(S.code) + '&next=' + encodeURIComponent('q031-' + CFG.page + '.html') +
+      extraParams + (S.dev ? '&dev=1' : '') + (S.study ? '&study=1' : '') + (consented ? '&agreed=1' : '');
+    window.__q031.navigatedTo = u;
+    leaving = true;
+    if (haveLock && !lockLost()) LS.del(LKK);
+    haveLock = false;
+    location.href = u;
+  }
+  function completionHtml(rc) {
+    if (rc && rc.code && COMPLETION) {
+      const link = COMPLETION + (COMPLETION.indexOf('?') < 0 ? '?' : '&') + 'cc=' + encodeURIComponent(rc.code);
+      return '<p>Your answers arrived (receipt ' + rc.receipt + '). Return to ' + CFG.platform + ' with completion code <b id="completion-code">' + rc.code +
+        '</b>.</p><div class="choices"><a class="btn" id="completion-link" style="display:flex;align-items:center;justify-content:center;text-decoration:none" href="' + link + '">Finish on ' + CFG.platform + '</a></div>';
+    }
+    return '<p id="completion-nocode">Your answers arrived' + (rc && rc.receipt ? ' (receipt ' + rc.receipt + ')' : '') + ', but the completion code could not be shown. Please return to ' + CFG.platform +
+      ', use its option for finishing without a completion code, and message the researcher with your study code. Genuine participation will be paid.</p>';
+  }
+  function inviteStop(why) {
+    blocked = true; consented = false;
+    const tail = ' If this keeps happening, message the researcher through ' + CFG.platform + ' with your study code <b>' + S.code + '</b>.';
+    if (why === 'storage') {
+      sheet('finish', '<h1>This browser cannot run the study</h1><p id="invite-storage">This page needs to keep a little information in this browser while you take part, and this browser is not allowing it (site data may be blocked for this page). Nothing has been recorded or sent. Please open your study link from ' +
+        CFG.platform + ' again in Google Chrome with site data allowed.' + tail + '</p>', []);
+      return;
+    }
+    sheet('finish', '<h1>Please reopen your study link</h1><p id="invite-missing">This page was not opened from your personal study link, so it has stopped and is not recording or sending anything. Please return to ' +
+      CFG.platform + ' and open your study link from there again, in this browser; anything already saved will be kept.' + tail + '</p>', []);
+  }
+  function inviteProblem(resuming) {
+    if (!SSX || !cryptoOK) return 'storage';
+    if (!INVITE) return 'invite';
+    if ((resuming || S.pos === 2 || S.mode === 'extra') && !getSession()) return 'session';
+    return null;
+  }
+  function showDone() {
+    let rc = ST.final;
+    if (!rc) { const own = RC()[ST.sid]; if (own && own.final) rc = own; }
+    sheet('finish', '<h1>Thank you</h1><p>You are done. Your study code is <b>' + S.code + '</b>.</p><div id="completion">' + completionHtml(rc) + '</div>', []);
+  }
+  let finishing = false;
+  async function finish() {
+    if (finishing) return;
+    finishing = true;
+    if (!ST.finalQueued) {
+      log('finish');
+      record.completed = true;
+      ST.finalQueued = true;
+      setStage('finish');
+      enqueue(true);
+    }
+    const done = '<h1>Thank you</h1><p>You are done. Your study code is <b>' + S.code + '</b>.</p>';
+    if (!persisting()) { sheet('finish', done + '<div id="completion"></div>', []); return; }
+    await savedOrRetry('final');
+    const rc = RC()[ST.sid] || {};
+    ST.final = { receipt: rc.receipt || null, code: rc.code || null };
+    sheet('finish', done + '<div id="completion">' + completionHtml(rc) + '</div>', []);
+    ST.stage = 'done'; save(true);
+    try {
+      const pre = 'q031s:' + S.code + ':';
+      LS.keys().forEach(k => {
+        if (k.indexOf(pre) !== 0) return;
+        if (/:rec$/.test(k)) { LS.del(k); return; }
+        const o = LS.get(k); if (o && o.st) LS.set(k, { st: doneMarker(o.st) });
+      });
+    } catch (e) {  }
+    if (haveLock && !lockLost()) LS.del(LKK);
+    haveLock = false;
+    if (!mine(OB()).length) forgetInvite();
+  }
+  function finalChoice() {
+    return new Promise(resolve => {
+      sheet('choice', '<h1>One more?</h1><p>You have tried Candidate A and Candidate B. You can play one more challenge from either, or stop here. All three options receive the same payment.</p>',
+        [{ text: 'One more Candidate A challenge', id: 'choice-A', quiet: true, on: () => pick('A') },
+         { text: 'One more Candidate B challenge', id: 'choice-B', quiet: true, on: () => pick('B') },
+         { text: 'Stop here', id: 'choice-stop', quiet: true, on: () => pick('stop') }]);
+      function pick(c) { document.querySelectorAll('#choice .btn').forEach(b => { b.disabled = true; }); resolve(c); }
+    });
+  }
+  function between() {
+    return new Promise(resolve => {
+      sheet('between', '<h1>Candidate ' + S.label + ' is done</h1><p>Next is Candidate ' + S.otherLabel + '.</p>',
+        [{ text: 'Continue', id: 'btn-continue', on: ev => { ev.currentTarget.disabled = true; log('to_other'); resolve(); } }]);
+    });
+  }
+  function startExtraHere() {
+    S.mode = 'extra'; record.mode = 'extra';
+    record.extra = { label: S.label };
+    log('extra_start');
+    setStage('extra', { sitIndex: 0, hist: [] });
+    enqueue(false);
+  }
+  async function flow(resuming) {
+    for (;;) {
+      const s = ST.stage;
+      if (s === 'intro') { await intro(); setStage('play', { sitIndex: 0, hist: [] }); resuming = false; continue; }
+      if (s === 'play') { await runPhase(CFG.situations, T.CAP_MS, 'main', resuming); resuming = false; setStage('questions', { qIndex: 0 }); continue; }
+      if (s === 'questions') { await askQuestions(ST.qIndex); setStage(S.pos === 1 ? 'between' : 'choice'); enqueue(false); continue; }
+      if (s === 'between') {
+        await between();
+        enqueue(false);
+        await savedOrRetry('to_other');
+        goOther('&pos=2&label=' + S.otherLabel);
+        return;
+      }
+      if (s === 'choice') {
+        const c = await finalChoice();
+        record.finalChoice = c; ST.choice = c;
+        log('final_choice', { choice: c });
+        if (c === 'stop') { setStage('finish'); continue; }
+        if (c === S.label) { startExtraHere(); continue; }
+        setStage('toextra'); enqueue(false); continue;
+      }
+      if (s === 'toextra') {
+        await savedOrRetry('to_extra');
+        goOther('&pos=1&label=' + S.otherLabel + '&mode=extra&choice=' + ST.choice);
+        return;
+      }
+      if (s === 'extra') {
+        await runPhase([CFG.extra], T.EXTRA_CAP_MS, 'extra', resuming); resuming = false;
+        record.extra.outcome = record.situations.length ? record.situations[record.situations.length - 1].outcome : null;
+        setStage('finish');
+        continue;
+      }
+      if (s === 'finish' || s === 'done') { await finish(); return; }
+      return;
+    }
+  }
+  function restore(saved) {
+    Object.assign(ST, saved.st);
+    const r = LS.get(KEY + ':rec');
+    if (r) { for (const k in record) delete record[k]; Object.assign(record, r); }
+    if (saved.clk) Object.assign(CLK, saved.clk);
+    S.mode = record.mode || S.mode;
+    const gap = Math.max(0, Date.now() - (saved.savedAt || Date.now()));
+    CLK.resumes += 1; CLK.resumeGapMs += gap;
+    return gap;
+  }
+  async function main() {
+    buildPlayScreen();
+    setInterval(tick, T.TICK_MS);
+    if (S.dev && P.get('consentpreview') === '1') {
+      sheet('consent', CFG.consentHtml, [{ text: 'Start', on: () => {} }, { text: 'I do not agree', quiet: true, on: () => {} }]);
+      return;
+    }
+    const saved = S.study ? LS.get(KEY) : null;
+    if (saved && saved.st && saved.st.sid) {
+      if (saved.st.stage === 'done') { consented = true; restore(saved); showDone(); if (mine(OB()).length) flush(); else forgetInvite(); return; }
+      const stop = inviteProblem(true);
+      if (stop) { inviteStop(stop); return; }
+      const tookOver = takeOver();
+      consented = true;
+      const gap = restore(saved);
+      if (tookOver) log('took_over');
+      flush();
+      if (ST.stage === 'finish') { await flow(false); return; }
+      if (ST.stage === 'agree') { await savedOrRetry('agreement'); setStage('intro'); await flow(false); return; }
+      log('reloaded', { gapMs: gap });
+      await resumeScreen();
+      log('resumed');
+      save(true);
+      await flow(true);
+      return;
+    }
+    if (S.study) {
+      const stop = inviteProblem(false);
+      if (stop) { inviteStop(stop); return; }
+    }
+    if (S.pos === 1 && S.study && S.mode === 'main') {
+      const ok = await consent();
+      if (!ok) { sheet('finish', '<h1>Thank you</h1><p>No study data has been collected. You can close this page.</p>', []); return; }
+    }
+    if (persisting()) {
+      if (S.pos === 1 && S.mode === 'main') startSession();
+      const tookOver = takeOver();
+      ST.sid = newSid(); record.sid = ST.sid; ST.w0 = Date.now();
+      if (tookOver) log('took_over');
+      CLK.hides = 0; CLK.shows = 0; CLK.hiddenMs = 0;
+      flush();
+    }
+    if (S.mode === 'extra') {
+      const ch = P.get('choice');
+      record.finalChoice = ch === 'A' || ch === 'B' ? ch : null;
+      record.extra = { label: S.label };
+      log('extra_start');
+      setStage('extra', { sitIndex: 0, hist: [] });
+      enqueue(false);
+      await flow(false);
+      return;
+    }
+    if (persisting() && S.pos === 1 && S.mode === 'main') {
+      setStage('agree'); enqueue(false);
+      await savedOrRetry('agreement');
+    }
+    setStage('intro');
+    await flow(false);
+  }
+  window.__q031 = {
+    jump: S.dev ? function (k, extra) {
+      finishAll(); endingPlaying = false; awaitingNext = false; $('btn-next').hidden = true;
+      sitList = extra ? [CFG.extra] : CFG.situations; show('play');
+      startSituation(extra ? 0 : k);
+    } : undefined,
+    record: () => JSON.parse(JSON.stringify(record)),
+    clock: () => { accrue(); return clockView(); },
+    stage: () => ST.stage,
+    outbox: () => OB(), receipts: () => RC(),
+    timing: T, params: S, busy: busy, finishAll: finishAll,
+    view: () => View, inputEnabled: () => inputEnabled, endingPlaying: () => endingPlaying, navigatedTo: null,
+    lastTick: () => lastTickAt, defunct: () => defunct,
+    session: () => { const g = getSession(); return g ? { gs: g.gs } : null; }, blocked: () => blocked
+  };
+  View.init({ log: log, tween: tween, ease: ease, T: T, finishAll: finishAll });
+  window.addEventListener('DOMContentLoaded', main);
+})();
+
+</script>
+</body>
+</html>
